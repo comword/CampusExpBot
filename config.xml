@@ -1,6 +1,10 @@
 <?xml version="1.0" ?>
-<Motor>
+<Motors>
 	<!--Define motors to gpio number.-->
-	<Front left="2" right="3"/>
-	<Rear left="4" right="5"/>
-</Motor>
+	<Motor id="main" protocol="raw" gpio="2"/>
+	<Motor id="left_dir" protocol="raw" gpio="3"/>
+	<Motor id="right_dir" protocol="raw" gpio="4"/>
+</Motors>
+<Sensors>
+	<!--Define sensors to gpio number.-->
+</Sensors>
