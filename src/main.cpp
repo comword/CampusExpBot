@@ -5,6 +5,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
+#include "xmlhandler.h"
+
 #include <cstring>
 #include <functional>
 #include <iostream>
@@ -27,7 +29,7 @@ struct arg_parameter {
 int main(int argc, char *argv[])
 {
 	bool exit = false;
-	const char *config_path;
+	const char *config_path = "undefined";
 	const arg_parameter arg_proc[]={
 		{"--help","Display help tp this program.",
 		[](int,const char **) -> int {
@@ -59,7 +61,7 @@ int main(int argc, char *argv[])
             	argv++;
 				int used_parameter = arg.handler(argc, (const char **)argv);
 				if (used_parameter < 0){
-					std::cout<<"Failed reading parameter "<<*(argv - 1)<<std::endl;
+					std::cerr<<"Failed reading parameter "<<*(argv - 1)<<std::endl;
 					std::exit(1);
 				}
 				argc -= used_parameter;
@@ -81,6 +83,14 @@ int main(int argc, char *argv[])
     sigemptyset(&sigHandler.sa_mask);
     sigHandler.sa_flags = 0;
     sigaction(SIGINT, &sigHandler, NULL);
+	if (strcmp(config_path,"undefined") == 0)
+		config_path = "config.xml";//Default configure file.
+	xml_helper conf(config_path);
+	conf.load_sys_config();
+	if(!conf.get_load_sus()){
+		std::cerr<<"Coufigure file load error."<<std::endl;
+	}
+	conf.test_print_MotorsMap(conf.get_motors_conf());
 	//Main Loop
 	do{
 		

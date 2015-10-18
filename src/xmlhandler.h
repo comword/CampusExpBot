@@ -6,6 +6,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 #include "Defines.h"
+#include "tinyxml.h"
 
 #include <map>
 #include <memory>
@@ -24,6 +25,7 @@ class xml_helper
 		bool get_load_sus();
 		MotorsMap get_motors_conf();
 		SensorsMap get_sensors_conf();
+		void test_print_MotorsMap(MotorsMap Map);
 	private:
 		TiXmlDocument *doc;
 		std::unique_ptr<MotorsMap> motors_config;
