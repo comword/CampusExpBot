@@ -6,6 +6,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 #include <string>
+enum bot_status : int {
+	BOT_SELFCHECK = 0,
+	BOT_SYNC,
+	BOT_ONROAD,
+	BOT_DELIVER,
+	BOT_BACK,
+	BOT_ERROR
+};
 struct MotorsDef{
 	std::string id;
 	std::string protocol;
@@ -15,4 +23,8 @@ struct SensorsDef{
 	std::string id;
 	std::string protocol;
 	int gpio;
+};
+enum MotorProtocol : int{
+	MP_RAW = 0,
+	MP_DEF1
 };

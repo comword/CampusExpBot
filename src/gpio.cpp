@@ -18,6 +18,9 @@ GPIOClass::GPIOClass(std::string gnum)
     this->gpionum = gnum;  //Instatiate GPIOClass object for GPIO pin number "gnum"
 }
 
+GPIOClass::~GPIOClass()
+{
+}
 int GPIOClass::export_gpio()
 {
 	using namespace std;

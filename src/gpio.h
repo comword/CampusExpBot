@@ -15,6 +15,7 @@ class GPIOClass
 public:
 	GPIOClass();  // create a GPIO object that controls GPIO4 (default
 	GPIOClass(std::string x); // create a GPIO object that controls GPIOx, where x is passed to this constructor
+	virtual ~GPIOClass();
 	int export_gpio(); // exports GPIO
 	int unexport_gpio(); // unexport GPIO
 	int setdir_gpio(std::string dir); // Set GPIO Direction
