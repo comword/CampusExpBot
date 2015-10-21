@@ -6,15 +6,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 #include "motor.h"
-Motor::Motor(){}
+Motor::Motor()
+{
+	this->conf_loaded = false;
+}
 Motor::~Motor()
 {
 }
-int Motor::run(const char& id)
+int Motor::run(const char* id)
 {
 	return 0;
 }
-int Motor::stop(const char& id)
+int Motor::stop(const char* id)
 {
 	return 0;
+}
+int Motor::load_motor_conf(MotorsMap& map)
+{
+	motors_config = map;
+	this->conf_loaded = true;
+	return 0;
+}
+MotorsDef* Motor::find_motor_byid(const char *id)
+{
+	for (MotorsMap::iterator i=this -> motors_config.begin(); i!=this -> motors_config.end();i++){
+		if(*(i->first) == id )
+			return i->second;
+	}
+	return (MotorsDef*)0;
 }

@@ -5,21 +5,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
-#include "gpio.h"
+#include "wiringPi/wiringPi.h"
 #include "xmlhandler.h"
 
 #include <vector>
 
-using motors_info = std::vector<MotorsDef>;
-class Motor : public GPIOClass
+class Motor
 {
+friend class xml_helper;
 public:
 	Motor();
-	int run(const char& id);
-	int stop(const char& id);
+	int run(const char* id);
+	int stop(const char* id);
+	int load_motor_conf(MotorsMap& map);
 	~Motor();
 protected:
-	MotorProtocol motor_pro;
+	bool conf_loaded;
+	MotorsDef* find_motor_byid(const char *id);
 private:
-	motors_info *infos;
+	MotorsMap motors_config;
 };

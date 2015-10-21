@@ -12,8 +12,8 @@
 #include <memory>
 struct MotorsDef;
 struct SensorsDef;
-typedef std::map<std::string*,MotorsDef*> MotorsMap;
-typedef std::map<std::string*,SensorsDef*> SensorsMap;
+using MotorsMap = std::map<std::string*,MotorsDef*>;
+using SensorsMap =  std::map<std::string*,SensorsDef*>;
 class xml_helper
 {
 	public:
@@ -26,7 +26,7 @@ class xml_helper
 		MotorsMap get_motors_conf();
 		SensorsMap get_sensors_conf();
 		void test_print_MotorsMap(MotorsMap Map);
-	private:
+	protected:
 		TiXmlDocument *doc;
 		std::unique_ptr<MotorsMap> motors_config;
 		std::unique_ptr<SensorsMap> sensors_config;

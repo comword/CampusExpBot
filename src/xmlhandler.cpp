@@ -43,10 +43,10 @@ int xml_helper::load_sys_config()
 	TiXmlElement *MotorsTree = docHandle.FirstChild("Motors").FirstChild("Motor").ToElement();
 	while(MotorsTree){
 		MotorsDef *def_motor=new MotorsDef();
-		std::string *id = new std::string(MotorsTree->Attribute("id"));
+		std::string *id = new std::string(MotorsTree->Attribute("name"));
 		def_motor->id = *id;
 		def_motor->protocol = MotorsTree->Attribute("protocol");
-		def_motor->gpio = strtol(MotorsTree->Attribute("gpio"),NULL,10);
+		def_motor->gpio = strtol(MotorsTree->Attribute("id"),NULL,10);
 		motors_config->insert(std::pair<std::string*,MotorsDef*>(id,def_motor));
 		MotorsTree=MotorsTree->NextSiblingElement();
 	}
