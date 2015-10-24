@@ -6,6 +6,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 #include "motor.h"
+#include "uart.h"
 Motor::Motor()
 {
 	this->conf_loaded = false;

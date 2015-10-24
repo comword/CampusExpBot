@@ -13,22 +13,23 @@
 struct MotorsDef;
 struct SensorsDef;
 using MotorsMap = std::map<std::string*,MotorsDef*>;
-using SensorsMap =  std::map<std::string*,SensorsDef*>;
+using SensorsMap = std::map<std::string*,SensorsDef*>;
+class Uart;
 class xml_helper
 {
+	friend class Uart;
 	public:
 		// Initialization
 		xml_helper(const char *file_path);
 		~xml_helper();
 		int load_sys_config();
 		void unload_sys_conf();
-		bool get_load_sus();
 		MotorsMap get_motors_conf();
 		SensorsMap get_sensors_conf();
 		void test_print_MotorsMap(MotorsMap Map);
+		const char *wiringPi_so;
 	protected:
 		TiXmlDocument *doc;
 		std::unique_ptr<MotorsMap> motors_config;
 		std::unique_ptr<SensorsMap> sensors_config;
-		bool load_sus;
 };

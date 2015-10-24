@@ -6,12 +6,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 #include "xmlhandler.h"
+#include "uart.h"
+#include "motor.h"
 
 #include <cstring>
 #include <functional>
 #include <iostream>
 #include <signal.h>
 #include <stdlib.h>
+#include <stdexcept>
 void exit_processer(int n);
 namespace {
  
@@ -83,18 +86,24 @@ int main(int argc, char *argv[])
     sigemptyset(&sigHandler.sa_mask);
     sigHandler.sa_flags = 0;
     sigaction(SIGINT, &sigHandler, NULL);
+	xml_helper *conf;
+	Uart *u;
 	if (strcmp(config_path,"undefined") == 0)
 		config_path = "config.xml";//Default configure file.
-	xml_helper conf(config_path);
-	conf.load_sys_config();
-	if(!conf.get_load_sus()){
-		std::cerr<<"Coufigure file load error."<<std::endl;
+	try{
+		conf=new xml_helper(config_path);
+		conf->load_sys_config();
+		u=new Uart(*conf);
 	}
-	conf.test_print_MotorsMap(conf.get_motors_conf());
+	catch (std::runtime_error &e) {
+	}
+	conf->test_print_MotorsMap(conf->get_motors_conf());
 	//Main Loop
 	do{
-		
+		u->do_uart_cycle();	
 	} while (!exit);
+	delete(u);
+	delete(conf);
 	exit_processer(2);
 	return 0;
 }

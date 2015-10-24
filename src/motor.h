@@ -5,14 +5,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
-#include "wiringPi/wiringPi.h"
-#include "xmlhandler.h"
-
-#include <vector>
-
+#include <map>
+struct MotorsDef;
+using MotorsMap = std::map<std::string*,MotorsDef*>;
 class Motor
 {
-friend class xml_helper;
 public:
 	Motor();
 	int run(const char* id);

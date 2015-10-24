@@ -12,30 +12,30 @@
 #include <string>
 #include <map>
 #include <stdlib.h>
+#include <stdexcept>
 //xml_helper method
 xml_helper::xml_helper(const char *file_path) :
 motors_config(new MotorsMap()),
 sensors_config(new SensorsMap())
 {
-	load_sus = false;
+	std::string exp;
 	std::ifstream fin(file_path);
 	if (!fin){
-		std::cerr<<"xmlhandler.cpp:xml_helper INIT Failed: No such file or directory."<<std::endl;
+		exp = "xmlhandler.cpp:xml_helper INIT Failed: No such file or directory.";
+		std::cerr<<exp<<std::endl;
+		throw std::runtime_error(exp);
 	}
 	doc=new TiXmlDocument(file_path);
 	if(!(doc->LoadFile() == true)){
-		std::cerr<<"xmlhandler.cpp:xml_helper doc.LoadFile() Failed."<<std::endl;
+		exp = "xmlhandler.cpp:xml_helper doc.LoadFile() Failed.";
+		std::cerr<<exp<<std::endl;
+		throw std::runtime_error(exp);
 	}
-	load_sus = true;
 }
 xml_helper::~xml_helper()
 {
 	this->unload_sys_conf();
 	delete doc;
-}
-bool xml_helper::get_load_sus()
-{
-	return load_sus;
 }
 int xml_helper::load_sys_config()
 {
@@ -60,6 +60,8 @@ int xml_helper::load_sys_config()
 		sensors_config->insert(std::pair<std::string*,SensorsDef*>(id,def_sensor));
 		SensorsTree=SensorsTree->NextSiblingElement();
 	}
+	TiXmlElement *Get_so = docHandle.FirstChild("wiringPi").ToElement();
+	this -> wiringPi_so = Get_so -> Attribute("so");
 	return 0;
 }
 void xml_helper::unload_sys_conf()
