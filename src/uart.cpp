@@ -55,7 +55,7 @@ Uart::~Uart()
 }
 void Uart::do_uart_cycle()
 {
-	if (io)//true for in, false for out{
+	if (io){//true for in, false for out
 		//in
 		int ava = serialDataAvail(this->port);
 	}

@@ -5,13 +5,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
-#include <sqlite3.h>
+#include "SQLiteCpp/SQLiteCpp.h" 
+
+#include <string>
 class sqlite_helper
 {
 	public:
-		sqlite_helper(const char *db_path);
+		sqlite_helper(std::string db_path);
 		virtual ~sqlite_helper();
 	protected:
-		sqlite3 * DB;
-		char* errorMsg;
+		SQLite::Database *Db;
 };

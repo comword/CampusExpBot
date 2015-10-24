@@ -7,20 +7,22 @@
  */
 #include "database.h"
 
-#include <sqlite3.h>
-#include <string>
 #include <stdexcept>
-sqlite_helper::sqlite_helper(const char *db_path)
+sqlite_helper::sqlite_helper(std::string db_path)
 {
 	std::string exp;
-	int res = sqlite3_open(db_path,&(this->DB));
-	if ( res ){
-		exp = std::string("database.cpp:Can't open database:") + sqlite3_errmsg(this->DB);
-		sqlite3_close(this -> DB);
+	try{
+		this->Db=new SQLite::Database(db_path);
+	}
+	catch (std::exception& e){
+		exp = std::string("SQLite exception: ")+ e.what();
 		throw std::runtime_error(exp);
 		return;
 	}
 }
-sqlite_helper::~sqlite_helper(){}
+sqlite_helper::~sqlite_helper()
+{
+	delete(this->Db);
+}
 //sqlite3 * DB;
 //char* errorMsg;
