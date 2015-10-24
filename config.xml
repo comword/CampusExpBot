@@ -1,4 +1,5 @@
 <?xml version="1.0" ?>
+<wiringPi so="./libwiringPi.so.1.0"/>
 <Motors>
 	<!--Define motors to gpio number.-->
 	<Motor name="main" protocol="raw" id="2"/>
