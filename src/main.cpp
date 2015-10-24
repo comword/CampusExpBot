@@ -96,6 +96,8 @@ int main(int argc, char *argv[])
 		u=new Uart(*conf);
 	}
 	catch (std::runtime_error &e) {
+		std::cerr<<e.what()<<std::endl;
+		exit_processer(999);
 	}
 	conf->test_print_MotorsMap(conf->get_motors_conf());
 	//Main Loop
@@ -114,4 +116,6 @@ void exit_processer(int n)
 		int status = 0;
 		std::exit(status);
 	}
+	else
+		std::exit(n);
 }

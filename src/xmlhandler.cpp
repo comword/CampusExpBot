@@ -8,8 +8,8 @@
 #include "xmlhandler.h"
 
 #include <fstream>
-#include <iostream>
 #include <string>
+#include <iostream>
 #include <map>
 #include <stdlib.h>
 #include <stdexcept>
@@ -22,13 +22,11 @@ sensors_config(new SensorsMap())
 	std::ifstream fin(file_path);
 	if (!fin){
 		exp = "xmlhandler.cpp:xml_helper INIT Failed: No such file or directory.";
-		std::cerr<<exp<<std::endl;
 		throw std::runtime_error(exp);
 	}
 	doc=new TiXmlDocument(file_path);
 	if(!(doc->LoadFile() == true)){
 		exp = "xmlhandler.cpp:xml_helper doc.LoadFile() Failed.";
-		std::cerr<<exp<<std::endl;
 		throw std::runtime_error(exp);
 	}
 }
