@@ -15,18 +15,19 @@ public:
 	int (*wiringPiSetup) ();
 	int (*serialDataAvail) (int);
 	int (*serialGetchar) (int);
-	void (*serialPrintf) (int fd,char *message, ...) ;
-	Uart(xml_helper &conf);
+	void (*serialPrintf) (int fd,char *message, ...);
+	Uart(const char* wiringPi_path);
 	virtual ~Uart();
 	void do_uart_cycle();
 	void change_mode();
 	int put_in(std::string *buffer,const char* content);
 	char* read_from(std::string *buffer);
 	void clean_buffer(std::string *buffer);
+	char get_sum_of_buffer(std::string *buffer);
 private:
 	int port;
 	bool serial_ok;
 	void *wiringPi_handle;
 	bool io = false;//true for in, false for out
-	std::string *rbuffer,wbuffer;
+	std::string *rbuffer,*wbuffer;
 };

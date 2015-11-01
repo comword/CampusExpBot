@@ -8,6 +8,7 @@
 #include "xmlhandler.h"
 #include "uart.h"
 #include "motor.h"
+#include "database.h"
 
 #include <cstring>
 #include <functional>
@@ -88,12 +89,14 @@ int main(int argc, char *argv[])
     sigaction(SIGINT, &sigHandler, NULL);
 	xml_helper *conf;
 	Uart *u;
+	sqlite_helper *d;
 	if (strcmp(config_path,"undefined") == 0)
 		config_path = "config.xml";//Default configure file.
 	try{
 		conf=new xml_helper(config_path);
 		conf->load_sys_config();
-		u=new Uart(*conf);
+		u=new Uart(conf->get_wiringPi_so());
+		d=new sqlite_helper(conf->get_database_path());
 	}
 	catch (std::runtime_error &e) {
 		std::cerr<<e.what()<<std::endl;

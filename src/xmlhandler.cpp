@@ -38,34 +38,33 @@ xml_helper::~xml_helper()
 int xml_helper::load_sys_config()
 {
 	TiXmlHandle docHandle(doc);
-	TiXmlElement *MotorsTree = docHandle.FirstChild("Motors").FirstChild("Motor").ToElement();
-	while(MotorsTree){
-		MotorsDef *def_motor=new MotorsDef();
-		std::string *id = new std::string(MotorsTree->Attribute("name"));
-		def_motor->id = *id;
-		def_motor->protocol = MotorsTree->Attribute("protocol");
-		def_motor->gpio = strtol(MotorsTree->Attribute("id"),NULL,10);
-		motors_config->insert(std::pair<std::string*,MotorsDef*>(id,def_motor));
-		MotorsTree=MotorsTree->NextSiblingElement();
+	TiXmlElement *Tree = docHandle.FirstChild("Motors").FirstChild("Motor").ToElement();
+	while(Tree){
+		MotorsDef *def=new MotorsDef();
+		def->name = Tree->Attribute("name");
+		def->protocol = Tree->Attribute("protocol");
+		def->id = strtol(Tree->Attribute("id"),NULL,10);
+		motors_config->insert(std::pair<std::string*,MotorsDef*>(&def->name,def));
+		Tree=Tree->NextSiblingElement();
 	}
-	TiXmlElement *SensorsTree = docHandle.FirstChild("Sensors").FirstChild("Sensor").ToElement();
-	while(SensorsTree){
-		SensorsDef *def_sensor=new SensorsDef();
-		std::string *id = new std::string(SensorsTree->Attribute("id"));
-		def_sensor->id = *id;
-		def_sensor->protocol = SensorsTree->Attribute("protocol");
-		def_sensor->gpio = strtol(SensorsTree->Attribute("gpio"),NULL,10);
-		sensors_config->insert(std::pair<std::string*,SensorsDef*>(id,def_sensor));
-		SensorsTree=SensorsTree->NextSiblingElement();
+	Tree = docHandle.FirstChild("Sensors").FirstChild("Sensor").ToElement();
+	while(Tree){
+		SensorsDef *def=new SensorsDef();
+		def->id = Tree->Attribute("id");
+		def->protocol = Tree->Attribute("protocol");
+		def->gpio = strtol(Tree->Attribute("gpio"),NULL,10);
+		sensors_config->insert(std::pair<std::string*,SensorsDef*>(&def->id,def));
+		Tree=Tree->NextSiblingElement();
 	}
-	TiXmlElement *Get_so = docHandle.FirstChild("wiringPi").ToElement();
-	this -> wiringPi_so = Get_so -> Attribute("so");
+	Tree = docHandle.FirstChild("wiringPi").ToElement();
+	this -> wiringPi_so = Tree -> Attribute("so");
+	Tree = docHandle.FirstChild("DataBase").ToElement();
+	this -> database_path = Tree -> Attribute("path");
 	return 0;
 }
 void xml_helper::unload_sys_conf()
 {
 	for (MotorsMap::iterator i=motors_config->begin(); i!=motors_config->end();){
-		delete i->first;
 		delete i->second;
 		motors_config->erase(i++);
 	}
@@ -86,6 +85,14 @@ SensorsMap xml_helper::get_sensors_conf()
 void xml_helper::test_print_MotorsMap(MotorsMap Map)
 {
 	for (MotorsMap::iterator i=Map.begin(); i!=Map.end();i++){
-	std::cout<<*i->first<<"   "<<(i->second)->gpio<<std::endl;
+	std::cout<<*i->first<<"   "<<(i->second)->id<<std::endl;
 	}
+}
+const char *xml_helper::get_database_path()
+{
+	return this -> database_path;
+}
+const char *xml_helper::get_wiringPi_so()
+{
+	return this -> wiringPi_so;
 }

@@ -5,6 +5,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
+#pragma once
 #include <string>
 enum bot_status : int {
 	BOT_SELFCHECK = 0,
@@ -15,16 +16,27 @@ enum bot_status : int {
 	BOT_ERROR
 };
 struct MotorsDef{
-	std::string id;
+	std::string name;
 	std::string protocol;
-	int gpio;
+	int id;
 };
 struct SensorsDef{
 	std::string id;
 	std::string protocol;
 	int gpio;
 };
+struct DB_Row{
+	std::string number;
+	std::string express;
+	std::string owner;
+	std::string tel;
+	std::string entry_data;
+	std::string out_data;
+	int times_of_delivery;
+	int if_delivered;
+};
 enum MotorProtocol : int{
 	MP_RAW = 0,
 	MP_DEF1
 };
+#define UART_HEAD 0xFFFF;

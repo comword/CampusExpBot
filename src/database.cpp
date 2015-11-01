@@ -1,4 +1,4 @@
-/* Copyright 2015 
+/* Copyright 2015 Jiajie Jing,Henorvell Ge 
  *
  * This file is a part of CampusExpBot
  *
@@ -8,6 +8,7 @@
 #include "database.h"
 
 #include <stdexcept>
+#include <sstream>
 sqlite_helper::sqlite_helper(std::string db_path)
 {
 	std::string exp;
@@ -24,5 +25,16 @@ sqlite_helper::~sqlite_helper()
 {
 	delete(this->Db);
 }
-//sqlite3 * DB;
-//char* errorMsg;
+int sqlite_helper::db_add(DB_Row &row)
+{
+	std::string time,deliver;
+	std::stringstream s_time(time),s_deliver(deliver);
+	s_time<<row.times_of_delivery;
+	s_deliver<<row.if_delivered;
+	this->Db->exec("INSERT INTO Items (Number,Express,Owner,Tel,Entry_Date,Out_date) VALUE(\'"+row.number+"\',\'"+row.owner+"\',\'"+row.tel+"\',\'"+row.entry_data+"\',\'"+row.out_data+"\',\'"+s_time.str()+"\',\'"+s_deliver.str()+"\')");
+	return 0;
+}
+int sqlite_helper::db_del_by_num(std::string number)
+{
+	return 0;
+}

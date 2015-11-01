@@ -14,16 +14,17 @@
 #include <stdlib.h>
 #include <dlfcn.h>
 #include <stdexcept>
-Uart::Uart(xml_helper &conf)
+Uart::Uart(const char* wiringPi_path)
 {
+	wbuffer = new std::string();
 	std::string exp;
-	std::ifstream fin(conf.wiringPi_so);
+	std::ifstream fin(wiringPi_path);
 	if (!fin){
 		exp="uart.cpp:Uart INIT Failed: No such file or directory.";
 		throw std::runtime_error(exp);
 		return;
 	}
-	wiringPi_handle=dlopen(conf.wiringPi_so, RTLD_LAZY);
+	wiringPi_handle=dlopen(wiringPi_path, RTLD_LAZY);
 	if (wiringPi_handle == nullptr){
 		exp=std::string("uart.cpp:dlopen failed:")+dlerror();
 		throw std::runtime_error(exp);
@@ -34,6 +35,7 @@ Uart::Uart(xml_helper &conf)
 	serialClose = (int(*)(int))dlsym(wiringPi_handle, "serialClose"); 
 	wiringPiSetup = (int(*)())dlsym(wiringPi_handle, "wiringPiSetup"); 
 	serialDataAvail = (int(*)(int))dlsym(wiringPi_handle, "serialDataAvail"); 
+	serialPrintf = (void(*)(int,char*,...))dlsym(wiringPi_handle, "serialPrintf"); 
 	if((this -> port = serialOpen ("/dev/ttyAMA0", 115200)) < 0){
 		exp=std::string("uart.cpp:Unable to open serial device:")+strerror(errno);
 		dlclose(wiringPi_handle);
@@ -52,16 +54,27 @@ Uart::~Uart()
 {
 	serialClose(this->port);
 	dlclose(wiringPi_handle);
+	delete wbuffer;
 }
 void Uart::do_uart_cycle()
 {
-	if (io){//true for in, false for out
-		//in
-		int ava = serialDataAvail(this->port);
+	//TODO:just ignore servo reply
+	//if (io){//true for in, false for out
+	//in
+	//int ava = serialDataAvail(this->port);
+	//}
+	//else{
+	//out
+	int length=wbuffer->length();
+	if(length != 0){
+		char *tmp = new char[wbuffer->size() + 1];
+		std::copy(wbuffer->begin(),wbuffer->end(),tmp);
+		tmp[wbuffer->size()] = '\0';
+		serialPrintf(port,tmp);
+		delete[] tmp;
+		*wbuffer="";
 	}
-	else{
-		//out
-	}
+	//}
 }
 void Uart::change_mode()
 {
@@ -72,11 +85,19 @@ void Uart::change_mode()
 }
 int Uart::put_in(std::string *buffer,const char* content)
 {
+	buffer -> append(content);	
 	return 0;
 }
 char* Uart::read_from(std::string *buffer)
-{
-	return 0;
+{	
+	int length=buffer->length();
+	if(length != 0){
+		char *tmp = new char[buffer->size() + 1];
+		std::copy(buffer->begin(),buffer->end(),tmp);
+		tmp[buffer->size()] = '\0';
+		return tmp;
+	}
+	return nullptr;
 }
 void Uart::clean_buffer(std::string *buffer)
 {
