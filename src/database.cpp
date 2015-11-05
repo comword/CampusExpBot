@@ -13,7 +13,7 @@ sqlite_helper::sqlite_helper(std::string db_path)
 {
 	std::string exp;
 	try{
-		this->Db=new SQLite::Database(db_path);
+		this->Db=new SQLite::Database(db_path, SQLITE_OPEN_READWRITE);
 	}
 	catch (std::exception& e){
 		exp = std::string("SQLite exception: ")+ e.what();
