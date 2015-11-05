@@ -6,10 +6,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 #include "motor.h"
-#include "uart.h"
-Motor::Motor()
+Motor::Motor(const char* wiringPi_path,MotorsMap map) :
+Uart(wiringPi_path),
+motors_config(map),
+MOTOR_HEAD((char*)0xffff)
 {
-	this->conf_loaded = false;
 }
 Motor::~Motor()
 {
@@ -22,12 +23,6 @@ int Motor::stop(const char* id)
 {
 	return 0;
 }
-int Motor::load_motor_conf(MotorsMap& map)
-{
-	motors_config = map;
-	this->conf_loaded = true;
-	return 0;
-}
 MotorsDef* Motor::find_motor_byid(const char *id)
 {
 	for (MotorsMap::iterator i=this -> motors_config.begin(); i!=this -> motors_config.end();i++){
@@ -35,4 +30,8 @@ MotorsDef* Motor::find_motor_byid(const char *id)
 			return i->second;
 	}
 	return (MotorsDef*)0;
+}
+void Motor::do_uart_cycle()
+{
+	Uart::do_uart_cycle();
 }

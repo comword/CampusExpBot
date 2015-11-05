@@ -4,11 +4,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>
 RELEASE_FLAGS = -Werror
 WARNINGS = -Wall -Wextra
-ifeq ($(shell sh -c 'uname -o 2>/dev/null || echo not'),Cygwin)
-  DEBUG = -g
-else
-  DEBUG = -g -D_GLIBCXX_DEBUG
-endif
+#ifeq ($(shell sh -c 'uname -o 2>/dev/null || echo not'),Cygwin)
+#  DEBUG = -g
+#else
+#  DEBUG = -g -D_GLIBCXX_DEBUG
+#endif
 VERSION = 0.0.1
 TARGET = campusbot
 BUILD_DIR = $(CURDIR)
@@ -21,7 +21,7 @@ OS_COMPILER := $(CXX)
 OS_LINKER := $(CXX)
 CXX = $(OS_COMPILER)
 LD = $(OS_LINKER)
-DEFINES += -DLOCALIZE
+#DEFINES += -DLOCALIZE
 CXXFLAGS += -ffast-math
 LDFLAGS += $(PROFILE)
 # enable optimizations. slow to build
@@ -32,11 +32,11 @@ ifdef RELEASE
     CXXFLAGS += -Os
     LDFLAGS += -s
   endif
-  # OTHERS += -mmmx -m3dnow -msse -msse2 -msse3 -mfpmath=sse -mtune=native
+  OTHERS += -mmmx -m3dnow -msse -msse2 -msse3 -mfpmath=sse -mtune=native
   # Strip symbols, generates smaller executable.
   OTHERS += $(RELEASE_FLAGS)
   DEBUG =
-  DEFINES += -DRELEASE
+#  DEFINES += -DRELEASE
 endif
 ifdef CLANG
   ifeq ($(NATIVE), osx)
@@ -81,8 +81,8 @@ ifeq ($(TARGETSYSTEM), LINUX)
 endif
 LDFLAGS += -ltinyxml
 LDFLAGS += -ldl
-LDFLAGS += -lsqlite3
 LDFLAGS += -lSQLiteCpp
+LDFLAGS += -lsqlite3
 LDFLAGS += -L.
 all: $(TARGET) $(L10N)
 	@
@@ -103,7 +103,7 @@ clean:
 	rm -f libSQLiteCpp.a
 sqlitecpp:
 	cd SQLiteCpp;cmake -DSQLITECPP_BUILD_EXAMPLES=OFF -DSQLITECPP_BUILD_TESTS=OFF .;cmake --build .
-	cp SQLiteCpp/build/lib*.a .
+	cp SQLiteCpp/lib*.a .
 wiringPi:
 	cd src/wiringPi/wiringPi;make
 	cp src/wiringPi/wiringPi/libwiringPi.so.1.0 .

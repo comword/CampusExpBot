@@ -39,4 +39,4 @@ enum MotorProtocol : int{
 	MP_RAW = 0,
 	MP_DEF1
 };
-#define UART_HEAD 0xFFFF;
+

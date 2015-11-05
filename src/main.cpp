@@ -6,7 +6,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 #include "xmlhandler.h"
-#include "uart.h"
 #include "motor.h"
 #include "database.h"
 
@@ -83,19 +82,19 @@ int main(int argc, char *argv[])
 	//Start INIT
 	std::system("clear"); // Clear screen
 	struct sigaction sigHandler;
-    sigHandler.sa_handler = exit_processer;
-    sigemptyset(&sigHandler.sa_mask);
-    sigHandler.sa_flags = 0;
-    sigaction(SIGINT, &sigHandler, NULL);
+	sigHandler.sa_handler = exit_processer;
+	sigemptyset(&sigHandler.sa_mask);
+	sigHandler.sa_flags = 0;
+	sigaction(SIGINT, &sigHandler, NULL);
 	xml_helper *conf;
-	Uart *u;
 	sqlite_helper *d;
+	Motor *m;
 	if (strcmp(config_path,"undefined") == 0)
 		config_path = "config.xml";//Default configure file.
 	try{
 		conf=new xml_helper(config_path);
 		conf->load_sys_config();
-		u=new Uart(conf->get_wiringPi_so());
+		m=new Motor(conf->get_wiringPi_so(),conf->get_motors_conf());
 		d=new sqlite_helper(conf->get_database_path());
 	}
 	catch (std::runtime_error &e) {
@@ -105,9 +104,9 @@ int main(int argc, char *argv[])
 	conf->test_print_MotorsMap(conf->get_motors_conf());
 	//Main Loop
 	do{
-		u->do_uart_cycle();	
+		m->do_uart_cycle();
 	} while (!exit);
-	delete(u);
+	delete(m);
 	delete(conf);
 	exit_processer(2);
 	return 0;

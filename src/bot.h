@@ -12,7 +12,9 @@ class bot;
 extern bot *b;
 class bot
 {
-	public:
-		bot();
-		~bot();
+public:
+	bot();
+	~bot();
+	bot_status b_s = BOT_SELFCHECK;
+private:
 };
