@@ -8,19 +8,22 @@
 #include "uart.h"
 
 #include <map>
+#include <string>
 struct MotorsDef;
 using MotorsMap = std::map<std::string*,MotorsDef*>;
 class Motor : public Uart
 {
 public:
-	Motor(const char* wiringPi_path,MotorsMap map);
-	int run(const char* id);
-	int stop(const char* id);
+	Motor();
+	int run(std::string id);
+	int stop(std::string id);
 	void do_uart_cycle();
 	~Motor();
 protected:
-	MotorsDef* find_motor_byid(const char *id);
+	MotorsDef* find_motor_byid(std::string id);
 private:
 	MotorsMap motors_config;
 	const char* MOTOR_HEAD;
 };
+//only one motor control class
+extern Motor *m;

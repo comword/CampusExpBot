@@ -19,3 +19,4 @@ class sqlite_helper
 	protected:
 		SQLite::Database *Db;
 };
+extern sqlite_helper *d;

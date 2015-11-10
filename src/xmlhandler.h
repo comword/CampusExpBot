@@ -36,3 +36,5 @@ class xml_helper
 		std::unique_ptr<MotorsMap> motors_config;
 		std::unique_ptr<SensorsMap> sensors_config;
 };
+//only one xml class
+extern xml_helper *conf;

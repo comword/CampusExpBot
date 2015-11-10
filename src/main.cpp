@@ -7,14 +7,17 @@
  */
 #include "xmlhandler.h"
 #include "motor.h"
+#include "bot.h"
 #include "database.h"
 
-#include <cstring>
 #include <functional>
 #include <iostream>
 #include <signal.h>
 #include <stdlib.h>
 #include <stdexcept>
+xml_helper *conf;
+sqlite_helper *d;
+Motor *m;
 void exit_processer(int n);
 namespace {
  
@@ -86,16 +89,14 @@ int main(int argc, char *argv[])
 	sigemptyset(&sigHandler.sa_mask);
 	sigHandler.sa_flags = 0;
 	sigaction(SIGINT, &sigHandler, NULL);
-	xml_helper *conf;
-	sqlite_helper *d;
-	Motor *m;
+	b = new bot();
 	if (strcmp(config_path,"undefined") == 0)
 		config_path = "config.xml";//Default configure file.
 	try{
 		conf=new xml_helper(config_path);
 		conf->load_sys_config();
-		m=new Motor(conf->get_wiringPi_so(),conf->get_motors_conf());
-		d=new sqlite_helper(conf->get_database_path());
+		m=new Motor();
+//		d=new sqlite_helper(conf->get_database_path());
 	}
 	catch (std::runtime_error &e) {
 		std::cerr<<e.what()<<std::endl;
@@ -105,6 +106,7 @@ int main(int argc, char *argv[])
 	//Main Loop
 	do{
 		m->do_uart_cycle();
+		b->go();
 	} while (!exit);
 	delete(m);
 	delete(conf);
