@@ -23,6 +23,9 @@ void bot::go()
 	switch (b_s) {
 	case BOT_SELFCHECK:
 		m->run("1");
+		m->run("2");
+		m->run("3");
+		m->run("4");
 		return;
 	case BOT_SYNC:
 		return;

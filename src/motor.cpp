@@ -7,6 +7,7 @@
  */
 #include "motor.h"
 #include "xmlhandler.h"
+#include "timer.h"
 Motor::Motor() :
 Uart(conf->get_wiringPi_so()),
 motors_config(conf->get_motors_conf()),
@@ -17,6 +18,10 @@ Motor::~Motor()
 {
 }
 int Motor::run(std::string id)
+{
+	return 0;
+}
+int Motor::run(std::string id,int ms)
 {
 	return 0;
 }

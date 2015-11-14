@@ -16,6 +16,7 @@ class Motor : public Uart
 public:
 	Motor();
 	int run(std::string id);
+	int run(std::string id,int ms);
 	int stop(std::string id);
 	void do_uart_cycle();
 	~Motor();
