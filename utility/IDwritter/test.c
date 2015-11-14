@@ -49,25 +49,28 @@ int main()
 	unsigned char inputID;
 	scanf("%d",&inputID);
 	if (inputID < 253){
-		char *buffer = (char*)malloc(8*sizeof(char));
+		char *buffer = (char*)malloc(11*sizeof(char));
 		*buffer = 0xff;
-		*(buffer+1) = 0xff;
-		*(buffer+2) = 0xfe;//broadcast
-		*(buffer+3) = 0x04;
-		*(buffer+4) = 0x03;//write data
-		*(buffer+5) = 0x03;//write data
-		*(buffer+6) = inputID;
+		*(buffer+1)=0xff;
+		*(buffer+2)=0x00;
+		*(buffer+3)=0x07;
+		*(buffer+4)=0x03;
+		*(buffer+5)=0x1e;
+		*(buffer+6)=0x00;
+		*(buffer+7)=0x02;
+		*(buffer+8)=0x00;
+		*(buffer+9)=0x02;
 		int sum;
-		sum = 0xfe;
+		sum = 0x00;
+		sum += 0x07;
+		sum += 0x03+0x1e;
 		sum += 0x04;
-		sum += 0x03;
-		sum += 0x03+inputID;
 		sum = sum&0xff;
 		sum = ~sum;
 		char *chsum = (char*)malloc(sizeof(char));
 		memcpy(chsum,&sum,sizeof(char));
 		//printf("%d",*chsum);
-		*(buffer+7) = *chsum;//checksum
+		*(buffer+10) = *chsum;//checksum
 		printf("Sending:\n %s \n",buffer);
 		if(UART_Send(u,buffer,sizeof(buffer))==sizeof(buffer))
 			printf("OK!\n");
