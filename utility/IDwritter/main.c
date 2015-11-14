@@ -46,5 +46,42 @@ int main()
 		fprintf(stderr,"InitSerial Error!\n");
 		return -1;
 	}
+	unsigned char inputID;
+	scanf("%d",&inputID);
+	if (inputID < 253){
+		char *buffer = (char*)malloc(8*sizeof(char));
+		*buffer = 0xff;
+		*(buffer+1) = 0xff;
+		*(buffer+2) = 0xfe;//broadcast
+		*(buffer+4) = 0x04;
+		*(buffer+5) = 0x03;//write data
+		*(buffer+6) = inputID;
+		int sum;
+		sum = 0xfe;
+		sum += 0x04;
+		sum += 0x03+inputID;
+		sum = sum&0xff;
+		sum = ~sum;
+		char *chsum = (char*)malloc(sizeof(char));
+		memcpy(chsum,&sum,sizeof(char));
+		//printf("%d",*chsum);
+		*(buffer+7) = *chsum;//checksum
+		printf("Sending:\n %s \n",buffer);
+		UART_Send(u,buffer,sizeof(buffer));
+	} else {
+		fflush(stdin);
+		fprintf(stderr,"Error:inputID cannot large than 253.\n");
+	}
 	close(u);
+}
+int UART_Send(int fd, char *send_buf,int data_len)
+{
+	int res;
+	res = write(fd,send_buf,data_len);
+	if (data_len == res ){    
+		return res;
+	} else {
+		tcflush(fd,TCOFLUSH);
+		return -1;
+    }
 }
