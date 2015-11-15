@@ -30,8 +30,8 @@ struct DB_Row{
 	std::string express;
 	std::string owner;
 	std::string tel;
-	std::string entry_date;
-	std::string out_date;
+	std::string entry_data;
+	std::string out_data;
 	int times_of_delivery;
 	int if_delivered;
 };

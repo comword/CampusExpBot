@@ -103,7 +103,7 @@ int sqlite_helper::db_search_by_owner(std::string owner)
 	return 0;
 }
 
-/*int main() // test
+int main() // test
 {
 	using namespace std;
 
@@ -170,4 +170,3 @@ int sqlite_helper::db_search_by_owner(std::string owner)
 	}
 	return 0;
 }
-*/

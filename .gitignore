@@ -14,6 +14,7 @@
 *.dylib
 *.dll
 *.so.*
+*.a
 
 # Fortran module files
 *.mod
@@ -28,3 +29,6 @@
 *.exe
 *.out
 *.app
+
+#Database
+*.db
