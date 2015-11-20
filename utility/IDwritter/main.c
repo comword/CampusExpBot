@@ -6,6 +6,27 @@
 #include <termios.h>
 
 #define UART "/dev/ttyAMA0"
+#define BAUDRATE B115200
+void ByteToHexStr(const unsigned char* source, char* dest, int sourceLen)  
+{
+	short i;
+	unsigned char highByte, lowByte;
+	for (i = 0; i < sourceLen; i++){
+		highByte = source[i] >> 4;
+		lowByte = source[i] & 0x0f;
+		highByte += 0x30;
+		if (highByte > 0x39)
+			dest[i * 2] = highByte + 0x07;
+		else
+			dest[i * 2] = highByte;
+		lowByte += 0x30;
+		if (lowByte > 0x39)
+			 dest[i * 2 + 1] = lowByte + 0x07;
+		else
+			dest[i * 2 + 1] = lowByte;
+	} 
+	return ;  
+}
 void cfmakeraw(struct termios *t)
 {
 	t->c_iflag &= ~(IMAXBEL|IGNBRK|BRKINT|PARMRK|ISTRIP|INLCR|IGNCR|ICRNL|IXON);
@@ -17,13 +38,6 @@ void cfmakeraw(struct termios *t)
 int InitSerial()
 {
 	int u = -1;
-	/*
-	* O_RDONLY - Open for reading only.
-	* O_RDWR - Open for reading and writing.
-	* O_WRONLY - Open for writing only.
-	* O_NDELAY - Enables nonblocking mode. When set read requests on the file can return immediately with a failure status
-	* O_NOCTTY - When set and path identifies a terminal device, open() shall not cause the terminal device to become the controlling terminal for the process.
-	*/
 	u = open(UART,O_RDWR | O_NOCTTY | O_NDELAY);
 	if (u == -1)
 	{
@@ -33,8 +47,8 @@ int InitSerial()
 	struct termios options;
 	tcgetattr(u, &options);
 	cfmakeraw(&options); //row mode
-	cfsetispeed(&options, B115200);
-	cfsetospeed(&options, B115200);
+	cfsetispeed(&options, BAUDRATE);
+	cfsetospeed(&options, BAUDRATE);
 	options.c_cflag |=  (CLOCAL | CREAD);
 	options.c_cflag &= ~CSIZE;
 	options.c_cflag |= CS8;
@@ -42,8 +56,6 @@ int InitSerial()
 	options.c_cflag &= ~CSTOPB; //one stop bit
 	options.c_oflag = 0;
 	options.c_lflag = 0;
-	options.c_ispeed=1000000;
-	options.c_ospeed=1000000;
 	tcflush(u, TCIFLUSH);
 	tcsetattr(u, TCSANOW, &options);
 	return u;
@@ -51,8 +63,7 @@ int InitSerial()
 int UART_Send(int fd, char *send_buf,int data_len)
 {
 	for (int i = 0; i < data_len; i++){
-		int res;
-		res = write(fd,(send_buf+i),1);
+		write(fd,send_buf+i,1);
 		tcflush(fd,TCOFLUSH);
 	}
 }
@@ -70,15 +81,14 @@ int main()
 	if (input < 253){
 		input &= 0xff;
 		unsigned char *inputID = (char *)&input;
-		char *buffer = (char*)malloc(4*sizeof(char));
+		char *buffer = (char*)malloc(8*sizeof(char));
 		*buffer = 0xff;
 		*(buffer+1) = 0xff;
 		*(buffer+2) = 0xfe;//broadcast
 		*(buffer+3) = 0x04;
-		UART_Send(u,buffer,sizeof(buffer));
-		*(buffer) = 0x03;//write data
-		*(buffer+1) = 0x03;//write data
-		*(buffer+2) = *inputID;
+		*(buffer+4) = 0x03;//write data
+		*(buffer+5) = 0x03;//write data
+		*(buffer+6) = *inputID;
 		int sum;
 		sum = 0xfe;
 		sum += 0x04;
@@ -88,10 +98,13 @@ int main()
 		sum = ~sum;
 		char *chsum = (char*)malloc(sizeof(char));
 		memcpy(chsum,&sum,sizeof(char));
-		printf("%d\n",*chsum);
-		*(buffer+3) = *chsum;//checksum
-		printf("Sending:\n %s \n",buffer);
-		UART_Send(u,buffer,sizeof(buffer));
+		*(buffer+7) = *chsum;//checksum
+		char todisplay[50];
+		char * p_display=todisplay;
+		memset(p_display,0,50*sizeof(char));
+		ByteToHexStr(buffer,p_display,8*sizeof(char));
+		printf("Sending:\n %s \n",p_display);
+		UART_Send(u,buffer,8*sizeof(char));
 		free(buffer);
 	} else {
 		fflush(stdin);

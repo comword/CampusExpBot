@@ -6,7 +6,7 @@
 #include <string.h>
 
 #define UART "/dev/ttyAMA0"
-#define BAUDRATE B1000000
+#define BAUDRATE B115200
 void cfmakeraw(struct termios *t)
 {
 	t->c_iflag &= ~(IMAXBEL|IGNBRK|BRKINT|PARMRK|ISTRIP|INLCR|IGNCR|ICRNL|IXON);
@@ -15,16 +15,29 @@ void cfmakeraw(struct termios *t)
 	t->c_cflag &= ~(CSIZE|PARENB);
 	t->c_cflag |= CS8;
 }
+void ByteToHexStr(const unsigned char* source, char* dest, int sourceLen)  
+{
+	short i;
+	unsigned char highByte, lowByte;
+	for (i = 0; i < sourceLen; i++){
+		highByte = source[i] >> 4;
+		lowByte = source[i] & 0x0f;
+		highByte += 0x30;
+		if (highByte > 0x39)
+			dest[i * 2] = highByte + 0x07;
+		else
+			dest[i * 2] = highByte;
+		lowByte += 0x30;
+		if (lowByte > 0x39)
+			 dest[i * 2 + 1] = lowByte + 0x07;
+		else
+			dest[i * 2 + 1] = lowByte;
+	}  
+	return ;  
+}
 int InitSerial()
 {
 	int u = -1;
-	/*
-	* O_RDONLY - Open for reading only.
-	* O_RDWR - Open for reading and writing.
-	* O_WRONLY - Open for writing only.
-	* O_NDELAY - Enables nonblocking mode. When set read requests on the file can return immediately with a failure status
-	* O_NOCTTY - When set and path identifies a terminal device, open() shall not cause the terminal device to become the controlling terminal for the process.
-	*/
 	u = open(UART,O_RDWR | O_NOCTTY | O_NDELAY);
 	if (u == -1)
 	{
@@ -39,8 +52,6 @@ int InitSerial()
 	options.c_cflag |=  (CLOCAL | CREAD);
 	options.c_cflag &= ~CSIZE;
 	options.c_cflag |= CS8;
-//	options.c_cflag &= ~PARENB;//no odd & even check bit
-//	options.c_iflag &= ~INPCK;
 	options.c_iflag |= IGNPAR;
 	options.c_cflag &= ~CSTOPB; //one stop bit
 	options.c_oflag = 0;
@@ -51,13 +62,10 @@ int InitSerial()
 }
 int UART_Send(int fd, char *send_buf,int data_len)
 {
-	char *tmp = (char*)malloc(sizeof(char));
 	for(int i=0;i<data_len;i++){
-		*tmp = *(send_buf+i);
-		write(fd,tmp,1);
+		write(fd,send_buf+i,1);
 		tcflush(fd,TCOFLUSH);
 	}
-	free(tmp);
 }
 int main()
 {
@@ -73,19 +81,17 @@ int main()
 	if (input < 253){
 		input &= 0xff;
 		unsigned char *inputID = (char *)&input;
-		char *buffer = (char*)malloc(4*sizeof(char));
+		char *buffer = (char*)malloc(11*sizeof(char));
 		*buffer = 0xff;
 		*(buffer+1)=0xff;
 		*(buffer+2)=*inputID;
 		*(buffer+3)=0x07;
-		UART_Send(u,buffer,sizeof(buffer));
-		*(buffer)=0x03;
-		*(buffer+1)=0x1e;
-		*(buffer+2)=0x00;
-		*(buffer+3)=0x02;
-		UART_Send(u,buffer,sizeof(buffer));
-		*(buffer)=0x00;
-		*(buffer+1)=0x02;
+		*(buffer+4)=0x03;
+		*(buffer+5)=0x1e;
+		*(buffer+6)=0x00;
+		*(buffer+7)=0x02;
+		*(buffer+8)=0x00;
+		*(buffer+9)=0x02;
 		int sum;
 		sum = *inputID;
 		sum += 0x07;
@@ -96,9 +102,13 @@ int main()
 		char *chsum = (char*)malloc(sizeof(char));
 		memcpy(chsum,&sum,sizeof(char));
 		//printf("%d",*chsum);
-		*(buffer+2) = *chsum;//checksum
-		printf("Sending:\n %s \n",buffer);
-		UART_Send(u,buffer,3);
+		*(buffer+10) = *chsum;//checksum
+		char todisplay[50];
+		char * p_display=todisplay;
+		memset(p_display,0,50*sizeof(char));
+		ByteToHexStr(buffer,p_display,11*sizeof(char));
+		printf("Sending:\n %s \n",p_display);
+		UART_Send(u,buffer,11*sizeof(char));
 		free(buffer);
 		free(chsum);
 	} else {
