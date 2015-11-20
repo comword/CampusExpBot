@@ -19,6 +19,7 @@ public:
 	int run(std::string id,int ms);
 	int stop(std::string id);
 	void do_uart_cycle();
+	void set_Motor_mode(std::string id);
 	~Motor();
 protected:
 	MotorsDef* find_motor_byid(std::string id);

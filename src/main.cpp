@@ -102,7 +102,8 @@ int main(int argc, char *argv[])
 		std::cerr<<e.what()<<std::endl;
 		exit_processer(999);
 	}
-	conf->test_print_MotorsMap(conf->get_motors_conf());
+	auto Motors = conf->get_motors_conf();
+	conf->test_print_MotorsMap(Motors);
 	//Main Loop
 	do{
 		m->do_uart_cycle();

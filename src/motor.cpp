@@ -41,3 +41,10 @@ void Motor::do_uart_cycle()
 {
 	Uart::do_uart_cycle();
 }
+void Motor::set_Motor_mode(std::string id)
+{
+	int rid = find_motor_byid(id);
+	char *buf=(char *)malloc(10*sizeof(char));
+	this->put_in("");
+	free(buf);
+}

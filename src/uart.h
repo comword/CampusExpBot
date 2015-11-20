@@ -24,6 +24,7 @@ public:
 	char* read_from(std::string *buffer);
 	void clean_buffer(std::string *buffer);
 	char get_sum_of_buffer(std::string *buffer);
+	void ByteToHexStr(const unsigned char* source, char* dest, int sourceLen);
 private:
 	int port;
 	bool serial_ok;
