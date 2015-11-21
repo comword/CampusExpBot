@@ -15,11 +15,12 @@ class Motor : public Uart
 {
 public:
 	Motor();
-	int run(std::string id);
-	int run(std::string id,int ms);
+	int run(std::string id,int speed);
+	int run(std::string id,int speed, int ms);
 	int stop(std::string id);
 	void do_uart_cycle();
 	void set_Motor_mode(std::string id);
+	void finish_checksum(char *buffer,size_t buf_size);
 	~Motor();
 protected:
 	MotorsDef* find_motor_byid(std::string id);
