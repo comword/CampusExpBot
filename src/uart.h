@@ -25,10 +25,10 @@ public:
 	void clean_buffer(std::string *buffer);
 	char get_sum_of_buffer(std::string *buffer);
 	void ByteToHexStr(const unsigned char* source, char* dest, int sourceLen);
+	std::string *rbuffer,*wbuffer;
 private:
 	int port;
 	bool serial_ok;
 	void *wiringPi_handle;
 	bool io = false;//true for in, false for out
-	std::string *rbuffer,*wbuffer;
 };

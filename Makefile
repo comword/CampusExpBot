@@ -5,7 +5,7 @@
 RELEASE_FLAGS = -Werror
 WARNINGS = -Wall -Wextra
 #ifeq ($(shell sh -c 'uname -o 2>/dev/null || echo not'),Cygwin)
-#  DEBUG = -g
+DEBUG = -g
 #else
 #  DEBUG = -g -D_GLIBCXX_DEBUG
 #endif
@@ -13,7 +13,6 @@ VERSION = 0.0.1
 TARGET = campusbot
 BUILD_DIR = $(CURDIR)
 SRC_DIR = src
-LOCALIZE = 1
 ODIR = obj
 DDIR = .deps
 OS  = $(shell uname -s)
@@ -35,7 +34,7 @@ ifdef RELEASE
   OTHERS += -mmmx -m3dnow -msse -msse2 -msse3 -mfpmath=sse -mtune=native
   # Strip symbols, generates smaller executable.
   OTHERS += $(RELEASE_FLAGS)
-  DEBUG =
+#  DEBUG =
 #  DEFINES += -DRELEASE
 endif
 ifdef CLANG

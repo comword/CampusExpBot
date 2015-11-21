@@ -17,7 +17,7 @@
 Motor::Motor() :
 Uart(conf->get_wiringPi_so()),
 motors_config(conf->get_motors_conf()),
-MOTOR_HEAD((const char*)0xffff)
+MOTOR_HEAD(0xffff)
 {
 }
 Motor::~Motor()
@@ -28,10 +28,10 @@ int Motor::run(std::string id,int speed)
 	//speed from -1023 to 1023
 	if (abs(speed) > 1023)
 		throw std::runtime_error(std::string("Motor::run speed value larger than 1023!\n"));
-	int rid = find_motor_byid(id);
+	int rid = find_motor_byid(id)->id;
 	char *buf=(char *)malloc(11*sizeof(char));
-	memset(buf,0,11*sizeof(char));
-	memcpy(buf,MOTOR_HEAD,2*sizeof(char);
+	buf=(char *)memset(buf,0,11*sizeof(char));
+	buf=(char *)memset(buf,MOTOR_HEAD,2*sizeof(char));
 	return 0;
 }
 int Motor::run(std::string id,int speed,int ms)
@@ -39,10 +39,10 @@ int Motor::run(std::string id,int speed,int ms)
 	//speed from -1023 to 1023
 	if (abs(speed) > 1023)
 		throw std::runtime_error(std::string("Motor::run speed value larger than 1023!\n"));
-	int rid = find_motor_byid(id);
+	int rid = find_motor_byid(id)->id;
 	char *buf=(char *)malloc(11*sizeof(char));
-	memset(buf,0,11*sizeof(char));
-	memcpy(buf,MOTOR_HEAD,2*sizeof(char);
+	buf=(char *)memset(buf,0,11*sizeof(char));
+	buf=(char *)memset(buf,MOTOR_HEAD,2*sizeof(char));
 	return 0;
 }
 int Motor::stop(std::string id)
@@ -64,12 +64,12 @@ void Motor::do_uart_cycle()
 void Motor::set_Motor_mode(std::string id)
 {
 	//FF FF ID 07 03 06 00 00 00 00 SM
-	int rid = find_motor_byid(id);
+	int rid = find_motor_byid(id)->id;
 	char *buf=(char *)malloc(11*sizeof(char));
-	memset(buf,0,11*sizeof(char));
-	memcpy(buf,MOTOR_HEAD,2*sizeof(char);
+	buf=(char *)memset(buf,0,11*sizeof(char));
+	buf=(char *)memset(buf,MOTOR_HEAD,2*sizeof(char));
 	rid &= 0xff;
-	unsigned char *motorID = (char *)&rid;
+	char *motorID = (char *)&rid;
 	*(buf+2) = *motorID;
 	*(buf+3) = 0x07;
 	*(buf+4) = 0x03;
@@ -79,7 +79,7 @@ void Motor::set_Motor_mode(std::string id)
 	*(buf+8) = 0x00;
 	*(buf+9) = 0x00;
 	finish_checksum(buf,11);
-	this->put_in(buf);
+	this->put_in(wbuffer,buf);
 	free(buf);
 }
 void Motor::finish_checksum(char *buffer,size_t buf_size)

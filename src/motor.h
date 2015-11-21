@@ -26,7 +26,7 @@ protected:
 	MotorsDef* find_motor_byid(std::string id);
 private:
 	MotorsMap motors_config;
-	const char* MOTOR_HEAD;
+	const int MOTOR_HEAD;
 };
 //only one motor control class
 extern Motor *m;

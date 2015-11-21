@@ -22,10 +22,9 @@ void bot::go()
 {
 	switch (b_s) {
 	case BOT_SELFCHECK:
-		m->run("1");
-		m->run("2");
-		m->run("3");
-		m->run("4");
+		m->run("main",1023);
+		m->run("right_dir",1023);
+		m->run("left_dir",1023);
 		return;
 	case BOT_SYNC:
 		return;
