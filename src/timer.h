@@ -19,13 +19,18 @@ public:
 	static void timer_callback( int sig, siginfo_t *si,void* uc );
 	typedef std::function<int(void*)> callback_func;
 	struct arg_callback{
-		int timerid;
+		callback_func func;
 		timer_t *timerID;
 		timer_helper *mclass;
 	};
-	using timetables = std::map<int,timer_t *>;
-	using functables = std::map<timer_t *,callback_func>;
-	int m_settimer(int timerID,callback_func func,int expireMS, int intervalMS );
-	timetables tt;
+//	using timetables = std::map<int,timer_t *>;
+	using functables = std::map<timer_t *,arg_callback *>;
+//	int m_settimer(int timerID,callback_func func,int expireMS, int intervalMS );
+//	timetables tt;
 	functables ft;
+	void m_initTimer(timer_t *timerId, callback_func function);
+	void m_setTimer(timer_t *timerId, int ExpireMSec);
+	void m_setTimer(timer_t *timerId, int ExpireMSec, int IntervalMSec);
+	void m_delTimer(timer_t *timerId);
+	inline timer_helper::arg_callback* find_timerarg_byID(timer_t *timerId);
 };

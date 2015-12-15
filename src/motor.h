@@ -16,7 +16,7 @@ class Motor : public Uart
 public:
 	Motor();
 	int run(std::string id,int speed);
-	int run(std::string id,int speed, int ms);
+	int run(std::string id,int speed, int delayms);
 	int stop(std::string id);
 	void do_uart_cycle();
 	void set_Motor_mode(std::string id);

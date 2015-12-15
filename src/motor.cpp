@@ -32,9 +32,12 @@ int Motor::run(std::string id,int speed)
 	char *buf=(char *)malloc(11*sizeof(char));
 	buf=(char *)memset(buf,0,11*sizeof(char));
 	buf=(char *)memset(buf,MOTOR_HEAD,2*sizeof(char));
+	rid &= 0xff;
+	char *motorID = (char *)&rid;
+	*(buf+2) = *motorID;
 	return 0;
 }
-int Motor::run(std::string id,int speed,int ms)
+int Motor::run(std::string id,int speed,int delayms)
 {
 	//speed from -1023 to 1023
 	if (abs(speed) > 1023)
