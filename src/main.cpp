@@ -9,6 +9,7 @@
 #include "motor.h"
 #include "bot.h"
 #include "database.h"
+#include "timer.h"
 
 #include <functional>
 #include <iostream>
@@ -18,6 +19,7 @@
 xml_helper *conf;
 sqlite_helper *d;
 Motor *m;
+timer_helper *t;
 void exit_processer(int n);
 namespace {
  
@@ -90,6 +92,7 @@ int main(int argc, char *argv[])
 	sigHandler.sa_flags = 0;
 	sigaction(SIGINT, &sigHandler, NULL);
 	b = new bot();
+	t = new timer_helper();
 	if (strcmp(config_path,"undefined") == 0)
 		config_path = "config.xml";//Default configure file.
 	try{
