@@ -48,11 +48,21 @@ int Motor::run(std::string id,int speed)
 int Motor::run(std::string id,int speed,int delayms)
 {
 	this -> run(id,speed);
-	
+	timer_t *t_timerid = new timer_t;
+	t->m_initTimer(t_timerid,[t_timerid,id](timer_t *Timer_ID,siginfo_t * si,void *)-> int {
+		if (t_timerid == Timer_ID){
+			m->stop(id);
+			return 1;//Handled.
+		}
+		return 0;
+	});
 	return 0;
 }
 int Motor::stop(std::string id)
 {
+	int rid = find_motor_byid(id)->id;
+	rid &= 0xff;
+    char *motorID = (char *)&rid;
 	return 0;
 }
 MotorsDef* Motor::find_motor_byid(std::string id)

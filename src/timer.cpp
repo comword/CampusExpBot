@@ -20,7 +20,7 @@ void timer_helper::timer_callback(int sig, siginfo_t *si,void* uc)
 	message = (arg_callback *)si->si_value.sival_ptr;
 //	if ( sig == SIGALRM || sig == SIGUSR1 ){
 	if ( sig == SIGUSR1 ){
-		
+		int result = message -> func (message -> timerID, si, uc);
 	}
 }
 /*
@@ -101,8 +101,16 @@ void timer_helper::m_setTimer(timer_t *timerId, int ExpireMSec, int IntervalMSec
 }
 void timer_helper::m_delTimer(timer_t *timerId)
 {
-	timer_delete(timerId);
-	
+	for (functables::iterator i=this -> ft.begin(); i!=this -> ft.end();i++){
+		if(*(i->first) == *timerId){
+			delete i->second;
+			delete i->first;
+			this->ft.erase(i);
+			timer_delete(timerId);
+			return;
+		}
+	}
+	throw std::runtime_error(std::string("ERROR:m_delTimer@timer_helper::timerId not found.\n"));
 }
 inline timer_helper::arg_callback* timer_helper::find_timerarg_byID(timer_t *timerId)
 {

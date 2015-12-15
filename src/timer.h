@@ -11,13 +11,16 @@
 #include <signal.h>
 #include <time.h>
 #include <functional>
+class timer_helper;
+//only one timer_help entity.
+extern timer_helper *t;
 class timer_helper
 {
 public:
 	timer_helper();
 	virtual ~timer_helper();
 	static void timer_callback( int sig, siginfo_t *si,void* uc );
-	typedef std::function<int(void*)> callback_func;
+	typedef std::function<int(timer_t *,siginfo_t *,void *)> callback_func;
 	struct arg_callback{
 		callback_func func;
 		timer_t *timerID;
