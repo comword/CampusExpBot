@@ -21,6 +21,8 @@ void timer_helper::timer_callback(int sig, siginfo_t *si,void* uc)
 //	if ( sig == SIGALRM || sig == SIGUSR1 ){
 	if ( sig == SIGUSR1 ){
 		int result = message -> func (message -> timerID, si, uc);
+		if(result)
+			return;
 	}
 }
 /*

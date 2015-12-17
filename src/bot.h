@@ -16,6 +16,7 @@ public:
 	bot();
 	~bot();
 	bot_status b_s = BOT_SELFCHECK;
+	void setMode(bot_status status);
 	int self_check();
 	void go();
 private:

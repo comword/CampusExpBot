@@ -43,26 +43,44 @@ int Motor::run(std::string id,int speed)
 	*(buf+6) = speed & 255;
 	*(buf+7) = (speed > 0) ? 1024 + (speed & 256) : abs(speed) & 256;
 	finish_checksum(buf,9);
+	this->put_in(wbuffer,buf);
+	free(buf);
 	return 0;
 }
 int Motor::run(std::string id,int speed,int delayms)
 {
 	this -> run(id,speed);
 	timer_t *t_timerid = new timer_t;
-	t->m_initTimer(t_timerid,[t_timerid,id](timer_t *Timer_ID,siginfo_t * si,void *)-> int {
+	t->m_initTimer(t_timerid,[t_timerid,id](timer_t *Timer_ID,siginfo_t *,void *)-> int {
 		if (t_timerid == Timer_ID){
 			m->stop(id);
+			t->m_delTimer(t_timerid);
 			return 1;//Handled.
 		}
 		return 0;
 	});
+	t->m_setTimer(t_timerid,delayms);
 	return 0;
 }
 int Motor::stop(std::string id)
 {
+	//FF FF (ID) 04 03 20 (0000000000000000B) SM
+	//                     | Speed  |D|
 	int rid = find_motor_byid(id)->id;
 	rid &= 0xff;
-    char *motorID = (char *)&rid;
+	char *motorID = (char *)&rid;
+	char *buf=(char *)malloc(9*sizeof(char));
+	buf=(char *)memset(buf,0,9*sizeof(char));
+	buf=(char *)memset(buf,MOTOR_HEAD,2*sizeof(char));
+	*(buf+2) = *motorID;
+	*(buf+3) = 0x04;
+	*(buf+4) = 0x03;
+	*(buf+5) = 0x20;
+	*(buf+6) = 0;
+	*(buf+7) = 0;
+	finish_checksum(buf,9);
+	this->put_in(wbuffer,buf);
+	free(buf);
 	return 0;
 }
 MotorsDef* Motor::find_motor_byid(std::string id)

@@ -36,7 +36,8 @@ Uart::Uart(const char* wiringPi_path)
 	wiringPiSetup = (int(*)())dlsym(wiringPi_handle, "wiringPiSetup"); 
 	serialDataAvail = (int(*)(int))dlsym(wiringPi_handle, "serialDataAvail"); 
 	serialPrintf = (void(*)(int,char*,...))dlsym(wiringPi_handle, "serialPrintf"); 
-	if((this -> port = serialOpen ("/dev/ttyAMA0", 115200)) < 0){
+	char uartPort[]="/dev/ttyAMA0";
+	if((this -> port = serialOpen (uartPort, 115200)) < 0){
 		exp=std::string("uart.cpp:Unable to open serial device:")+strerror(errno);
 		dlclose(wiringPi_handle);
 		throw std::runtime_error(exp);
@@ -85,7 +86,11 @@ void Uart::change_mode()
 }
 int Uart::put_in(std::string *buffer,const char* content)
 {
-	buffer -> append(content);	
+	if (buffer->length() != 0){
+		buffer -> append(content);
+		buffer -> append("\0");
+		return 0;
+	}
 	return 0;
 }
 char* Uart::read_from(std::string *buffer)

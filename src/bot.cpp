@@ -18,6 +18,10 @@ int bot::self_check()
 {
 	return 0;//no problem
 }
+void bot::setMode(bot_status status)
+{
+	b_s = status;
+}
 void bot::go()
 {
 	switch (b_s) {
