@@ -31,8 +31,8 @@ int Motor::run(std::string id,int speed)
 	if (abs(speed) > 1023)
 		throw std::runtime_error(std::string("Motor::run speed value larger than 1023!\n"));
 	int rid = find_motor_byid(id)->id;
-	char *buf=(char *)malloc(9*sizeof(char));
-	buf=(char *)memset(buf,0,9*sizeof(char));
+	char *buf=(char *)malloc(11*sizeof(char));
+	buf=(char *)memset(buf,0,11*sizeof(char));
 	buf=(char *)memset(buf,MOTOR_HEAD,2*sizeof(char));
 	rid &= 0xff;
 	char *motorID = (char *)&rid;
@@ -69,8 +69,8 @@ int Motor::stop(std::string id)
 	int rid = find_motor_byid(id)->id;
 	rid &= 0xff;
 	char *motorID = (char *)&rid;
-	char *buf=(char *)malloc(9*sizeof(char));
-	buf=(char *)memset(buf,0,9*sizeof(char));
+	char *buf=(char *)malloc(11*sizeof(char));
+	buf=(char *)memset(buf,0,11*sizeof(char));
 	buf=(char *)memset(buf,MOTOR_HEAD,2*sizeof(char));
 	*(buf+2) = *motorID;
 	*(buf+3) = 0x04;
