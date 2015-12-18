@@ -113,6 +113,8 @@ public:
 	RFID();
 	virtual ~RFID();
 	void RFID_init();
+	unsigned char findCard(unsigned char reqMode, unsigned char *TagType);
+	unsigned char anticoll(unsigned char *serNum);
 protected:
 	unsigned char readMFRC522(unsigned char Address);
 	void writeMFRC522(unsigned char Address, unsigned char value);
@@ -122,11 +124,10 @@ protected:
 	void antennaOff();
 	void calculateCRC(unsigned char *pIndata, unsigned char len, unsigned char *pOutData);
 	unsigned char MFRC522ToCard(unsigned char command, unsigned char *sendData, unsigned char sendLen, unsigned char *backData, unsigned int *backLen);
-	unsigned char findCard(unsigned char reqMode, unsigned char *TagType);
-	unsigned char anticoll(unsigned char *serNum);
 	unsigned char RFID_auth(unsigned char authMode, unsigned char BlockAddr, unsigned char *Sectorkey, unsigned char *serNum);
 	unsigned char RFID_read(unsigned char blockAddr, unsigned char *recvData);
 	unsigned char RFID_write(unsigned char blockAddr, unsigned char *writeData);
 	unsigned char RFID_selectTag(unsigned char *serNum);
 	unsigned char RFID_halt();
 };
+

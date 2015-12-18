@@ -10,18 +10,19 @@
 #include "bot.h"
 #include "database.h"
 #include "timer.h"
-#include "RFID.h"
+#include "IDCard.h"
 
 #include <functional>
 #include <iostream>
 #include <signal.h>
 #include <stdlib.h>
 #include <stdexcept>
+#include <unistd.h>
 xml_helper *conf;
 sqlite_helper *d;
 Motor *m;
 timer_helper *t;
-RFID *RF;
+IDCard *ID;
 void exit_processer(int n);
 namespace {
  
@@ -95,7 +96,7 @@ int main(int argc, char *argv[])
 	sigaction(SIGINT, &sigHandler, NULL);
 	b = new bot();
 	t = new timer_helper();
-	RF = new RFID();
+	ID = new IDCard();
 	if (strcmp(config_path,"undefined") == 0)
 		config_path = "config.xml";//Default configure file.
 	try{
@@ -112,6 +113,7 @@ int main(int argc, char *argv[])
 	conf->test_print_MotorsMap(Motors);
 	//Main Loop
 	do{
+		usleep(1000);
 		m->do_uart_cycle();
 		b->go();
 	} while (!exit);

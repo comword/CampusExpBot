@@ -5,6 +5,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
+#pragma once
 #include "SQLiteCpp/SQLiteCpp.h" 
 #include "Defines.h"
 
@@ -24,3 +25,4 @@ class sqlite_helper
 		SQLite::Database *Db;
 		SQLite::Statement *Query;
 };
+extern sqlite_helper *d;
