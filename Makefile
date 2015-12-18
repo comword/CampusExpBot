@@ -83,6 +83,7 @@ LDFLAGS += -ltinyxml
 LDFLAGS += -ldl
 LDFLAGS += -lSQLiteCpp
 LDFLAGS += -lsqlite3
+LDFLAGS += -lbcm2835
 LDFLAGS += -L.
 all: $(TARGET) $(L10N)
 	@

@@ -1,51 +1,64 @@
+/* Copyright 2015 Henorvell Ge
+ *
+ * This file is a part of CampusExpBot
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>
+ */
 #define MAX_LEN 18
-//MF522 Command
-#define PCD_IDLE              0x00               //Cancal command
-#define PCD_AUTHENT           0x0E               //Verify key
-#define PCD_RECEIVE           0x08               //Receive Data
-#define PCD_TRANSMIT          0x04               //Transmit Data
-#define PCD_TRANSCEIVE        0x0C               //Transmit Data&Receive Data
-#define PCD_RESETPHASE        0x0F               //Reset
-#define PCD_CALCCRC           0x03               //CRC Calculation
+//MF522 command bits
+#define PCD_IDLE              0x00               //NO action; cancel current commands
+#define PCD_AUTHENT           0x0E               //verify password key
+#define PCD_RECEIVE           0x08               //receive data
+#define PCD_TRANSMIT          0x04               //send data
+#define PCD_TRANSCEIVE        0x0C               //send and receive data
+#define PCD_RESETPHASE        0x0F               //reset
+#define PCD_CALCCRC           0x03               //CRC check and caculation
 
-//Mifare_One Card Command
-#define PICC_REQIDL           0x26               //Find card
-#define PICC_REQALL           0x52               //Find all card
-#define PICC_ANTICOLL         0x93            
-#define PICC_ANTICOLL1        0x93               //ANTICOLL
-#define PICC_ANTICOLL2        0x95               //ANTICOLL
-#define PICC_AUTHENT1A        0x60               //AUTH A Key
-#define PICC_AUTHENT1B        0x61               //AUTH B Key
-#define PICC_READ             0x30               //Read Block
-#define PICC_WRITE            0xA0               //Write Block
-#define PICC_DECREMENT        0xC0               //DECREMENT
-#define PICC_INCREMENT        0xC1               //INCREMENT
-#define PICC_RESTORE          0xC2               //read block to buffer
-#define PICC_TRANSFER         0xB0               //save data in buffer
-#define PICC_HALT             0x50               //halt
+//Mifare_One card command bits
+#define PICC_REQIDL           0x26               //Search the cards that not into sleep mode in the antenna area 
+#define PICC_REQALL           0x52               //Search all the cards in the antenna area
+#define PICC_ANTICOLL         0x93               //prevent conflict
+#define PICC_SElECTTAG        0x93               //select card
+#define PICC_ANTICOLL2        0x95		 // anticollision level 2
+#define PICC_ANTICOLL3        0x97               // anticollision level 3
+#define PICC_AUTHENT1A        0x60               //verify A password key
+#define PICC_AUTHENT1B        0x61               //verify B password key
+#define PICC_READ             0x30               //read 
+#define PICC_WRITE            0xA0               //write
+#define PICC_DECREMENT        0xC0               //deduct value
+#define PICC_INCREMENT        0xC1               //charge up value
+#define PICC_RESTORE          0xC2               //Restore data into buffer
+#define PICC_TRANSFER         0xB0               //Save data into buffer
+#define PICC_HALT             0x50               //sleep mode
 
-#define DEF_FIFO_LENGTH       64                 //FIFO size=64byte
 
-//MF522 Defination
-// PAGE 0
-#define     RFU00                 0x00   
-#define     CommandReg            0x01   
-#define     CommIEnReg            0x02   
-#define     DivlEnReg             0x03   
-#define     CommIrqReg            0x04   
+//THe mistake code that return when communicate with MF522
+#define MI_OK                 0
+#define MI_NOTAGERR           1
+#define MI_ERR                2
+
+
+//------------------MFRC522 register ---------------
+//Page 0:Command and Status
+#define     Reserved00            0x00    
+#define     CommandReg            0x01    
+#define     CommIEnReg            0x02    
+#define     DivlEnReg             0x03    
+#define     CommIrqReg            0x04    
 #define     DivIrqReg             0x05
-#define     ErrorReg              0x06   
-#define     Status1Reg            0x07   
-#define     Status2Reg            0x08   
+#define     ErrorReg              0x06    
+#define     Status1Reg            0x07    
+#define     Status2Reg            0x08    
 #define     FIFODataReg           0x09
 #define     FIFOLevelReg          0x0A
 #define     WaterLevelReg         0x0B
 #define     ControlReg            0x0C
 #define     BitFramingReg         0x0D
 #define     CollReg               0x0E
-#define     RFU0F                 0x0F
-// PAGE 1    
-#define     RFU10                 0x10
+#define     Reserved01            0x0F
+//Page 1:Command     
+#define     Reserved10            0x10
 #define     ModeReg               0x11
 #define     TxModeReg             0x12
 #define     RxModeReg             0x13
@@ -55,31 +68,31 @@
 #define     RxSelReg              0x17
 #define     RxThresholdReg        0x18
 #define     DemodReg              0x19
-#define     RFU1A                 0x1A
-#define     RFU1B                 0x1B
+#define     Reserved11            0x1A
+#define     Reserved12            0x1B
 #define     MifareReg             0x1C
-#define     RFU1D                 0x1D
-#define     RFU1E                 0x1E
+#define     Reserved13            0x1D
+#define     Reserved14            0x1E
 #define     SerialSpeedReg        0x1F
-// PAGE 2   
-#define     RFU20                 0x20
+//Page 2:CFG    
+#define     Reserved20            0x20  
 #define     CRCResultRegM         0x21
 #define     CRCResultRegL         0x22
-#define     RFU23                 0x23
+#define     Reserved21            0x23
 #define     ModWidthReg           0x24
-#define     RFU25                 0x25
+#define     Reserved22            0x25
 #define     RFCfgReg              0x26
 #define     GsNReg                0x27
-#define     CWGsCfgReg            0x28
-#define     ModGsCfgReg           0x29
+#define     CWGsPReg	          0x28
+#define     ModGsPReg             0x29
 #define     TModeReg              0x2A
 #define     TPrescalerReg         0x2B
 #define     TReloadRegH           0x2C
 #define     TReloadRegL           0x2D
 #define     TCounterValueRegH     0x2E
 #define     TCounterValueRegL     0x2F
-// PAGE 3
-#define     RFU30                 0x30
+//Page 3:TestRegister     
+#define     Reserved30            0x30
 #define     TestSel1Reg           0x31
 #define     TestSel2Reg           0x32
 #define     TestPinEnReg          0x33
@@ -88,15 +101,32 @@
 #define     AutoTestReg           0x36
 #define     VersionReg            0x37
 #define     AnalogTestReg         0x38
-#define     TestDAC1Reg           0x39 
-#define     TestDAC2Reg           0x3A  
-#define     TestADCReg            0x3B  
-#define     RFU3C                 0x3C  
-#define     RFU3D                 0x3D  
-#define     RFU3E                 0x3E  
-#define     RFU3F    0x3F
-
-//Returned error code with MF522
-#define MI_OK                          0
-#define MI_NOTAGERR                    (-1)
-#define MI_ERR                         (-2)
+#define     TestDAC1Reg           0x39  
+#define     TestDAC2Reg           0x3A   
+#define     TestADCReg            0x3B   
+#define     Reserved31            0x3C   
+#define     Reserved32            0x3D   
+#define     Reserved33            0x3E   
+#define     Reserved34			  0x3F
+class RFID{
+public:
+	RFID();
+	virtual ~RFID();
+	void RFID_init();
+protected:
+	unsigned char readMFRC522(unsigned char Address);
+	void writeMFRC522(unsigned char Address, unsigned char value);
+	void setBitMask(unsigned char reg, unsigned char mask);
+	void clearBitMask(unsigned char reg, unsigned char mask);
+	void antennaOn();
+	void antennaOff();
+	void calculateCRC(unsigned char *pIndata, unsigned char len, unsigned char *pOutData);
+	unsigned char MFRC522ToCard(unsigned char command, unsigned char *sendData, unsigned char sendLen, unsigned char *backData, unsigned int *backLen);
+	unsigned char findCard(unsigned char reqMode, unsigned char *TagType);
+	unsigned char anticoll(unsigned char *serNum);
+	unsigned char RFID_auth(unsigned char authMode, unsigned char BlockAddr, unsigned char *Sectorkey, unsigned char *serNum);
+	unsigned char RFID_read(unsigned char blockAddr, unsigned char *recvData);
+	unsigned char RFID_write(unsigned char blockAddr, unsigned char *writeData);
+	unsigned char RFID_selectTag(unsigned char *serNum);
+	unsigned char RFID_halt();
+};
