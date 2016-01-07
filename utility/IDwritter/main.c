@@ -4,9 +4,9 @@
 #include <fcntl.h>
 #include <string.h>
 #include <termios.h>
-
+#include <linux/serial.h>
+#include <sys/ioctl.h>
 #define UART "/dev/ttyAMA0"
-#define BAUDRATE B115200
 void ByteToHexStr(const unsigned char* source, char* dest, int sourceLen)  
 {
 	short i;
@@ -45,10 +45,9 @@ int InitSerial()
 		return -1;
 	}
 	struct termios options;
-	tcgetattr(u, &options);
 	cfmakeraw(&options); //row mode
-	cfsetispeed(&options, BAUDRATE);
-	cfsetospeed(&options, BAUDRATE);
+	cfsetispeed(&options, B1000000);
+	cfsetospeed(&options, B1000000);
 	options.c_cflag |=  (CLOCAL | CREAD);
 	options.c_cflag &= ~CSIZE;
 	options.c_cflag |= CS8;
@@ -58,6 +57,13 @@ int InitSerial()
 	options.c_lflag = 0;
 	tcflush(u, TCIFLUSH);
 	tcsetattr(u, TCSANOW, &options);
+	struct serial_struct ss;
+	ioctl(u, TIOCGSERIAL, &ss);
+	float BAUDRATE = 1000000;
+	ss.flags = (ss.flags & ~ASYNC_SPD_MASK) | ASYNC_SPD_CUST;
+	ss.custom_divisor = ss.baud_base / BAUDRATE;
+	printf("ss.baud_base:%d\nss.custom_divisor:%d\n",ss.baud_base,ss.custom_divisor);
+	ioctl(u, TIOCSSERIAL, &ss);
 	return u;
 }
 int UART_Send(int fd, char *send_buf,int data_len)

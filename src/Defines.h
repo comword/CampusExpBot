@@ -35,6 +35,10 @@ struct DB_Row{
 	int times_of_delivery;
 	int if_delivered;
 };
+struct wbchars{
+    int length;
+    char* buffer;
+};
 enum MotorProtocol : int{
 	MP_RAW = 0,
 	MP_DEF1

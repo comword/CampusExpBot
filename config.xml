@@ -1,9 +1,8 @@
 <?xml version="1.0" ?>
 <DataBase path="./items.db"/>
-<wiringPi so="./libwiringPi.so.1.0"/>
 <Motors>
 	<!--Define motors to gpio number.-->
-	<Motor name="main" protocol="raw" id="2"/>
+	<Motor name="main" protocol="raw" id="8"/>
 	<Motor name="left_dir" protocol="raw" id="3"/>
 	<Motor name="right_dir" protocol="raw" id="4"/>
 </Motors>

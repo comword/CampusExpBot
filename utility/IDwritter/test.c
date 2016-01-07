@@ -4,9 +4,10 @@
 #include <fcntl.h>
 #include <termios.h>
 #include <string.h>
+#include <linux/serial.h>
+#include <sys/ioctl.h>
 
 #define UART "/dev/ttyAMA0"
-#define BAUDRATE B115200
 void cfmakeraw(struct termios *t)
 {
 	t->c_iflag &= ~(IMAXBEL|IGNBRK|BRKINT|PARMRK|ISTRIP|INLCR|IGNCR|ICRNL|IXON);
@@ -45,10 +46,17 @@ int InitSerial()
 		return -1;
 	}
 	struct termios options;
-	tcgetattr(u, &options);
 	cfmakeraw(&options); //row mode
-	cfsetispeed(&options, BAUDRATE);
-	cfsetospeed(&options, BAUDRATE);
+	struct serial_struct ss;
+	ioctl(u, TIOCGSERIAL, &ss);
+	float BAUDRATE = 1000000;
+	ss.flags = ASYNC_SPD_CUST;
+	ss.custom_divisor = ss.baud_base / BAUDRATE;
+	ioctl(u, TIOCSSERIAL, &ss);
+	ioctl(u, TIOCGSERIAL, &ss);
+	printf("ss.baud_base:%d\nss.custom_divisor:%d\n",ss.baud_base,ss.custom_divisor);
+	cfsetispeed(&options, B1000000);
+	cfsetospeed(&options, B1000000);
 	options.c_cflag |=  (CLOCAL | CREAD);
 	options.c_cflag &= ~CSIZE;
 	options.c_cflag |= CS8;

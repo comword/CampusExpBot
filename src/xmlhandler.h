@@ -27,10 +27,8 @@ class xml_helper
 		MotorsMap get_motors_conf();
 		SensorsMap get_sensors_conf();
 		void test_print_MotorsMap(MotorsMap Map);
-		const char *wiringPi_so;
 		const char *database_path;
 		const char *get_database_path();
-		const char *get_wiringPi_so();
 	protected:
 		TiXmlDocument *doc;
 		std::unique_ptr<MotorsMap> motors_config;

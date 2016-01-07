@@ -4,3 +4,6 @@
 [submodule "SQLiteCpp"]
 	path = SQLiteCpp
 	url = https://github.com/SRombauts/SQLiteCpp.git
+[submodule "src/WiringPi"]
+	path = src/WiringPi
+	url = https://github.com/WiringPi/WiringPi

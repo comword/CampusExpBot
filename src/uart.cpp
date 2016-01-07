@@ -8,92 +8,97 @@
 #include "uart.h"
 #include "xmlhandler.h"
 
-#include <fstream>
-#include <errno.h>
-#include <string.h>
 #include <stdlib.h>
-#include <dlfcn.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <string.h>
+#include <termios.h>
+#include <linux/serial.h>
+#include <sys/ioctl.h>
 #include <stdexcept>
-Uart::Uart(const char* wiringPi_path)
+
+Uart::Uart()
 {
-	wbuffer = new std::string();
-	std::string exp;
-	std::ifstream fin(wiringPi_path);
-	if (!fin){
-		exp="uart.cpp:Uart INIT Failed: No such file or directory.";
-		throw std::runtime_error(exp);
-		return;
+	fd = new int;
+	*fd = this->InitSerial();
+}
+inline void Uart::cfmakeraw(struct termios *t)
+{
+    t->c_iflag &= ~(IMAXBEL|IGNBRK|BRKINT|PARMRK|ISTRIP|INLCR|IGNCR|ICRNL|IXON);
+    t->c_oflag &= ~OPOST;
+    t->c_lflag &= ~(ECHO|ECHONL|ICANON|ISIG|IEXTEN);
+    t->c_cflag &= ~(CSIZE|PARENB);
+    t->c_cflag |= CS8;
+}
+int Uart::InitSerial()
+{
+	int u = -1;
+	u = open("/dev/ttyAMA0",O_RDWR | O_NOCTTY | O_NDELAY);
+	if (u == -1){
+		throw std::runtime_error("uart.cpp:Error open UART port.\n");
+		return -1;
 	}
-	wiringPi_handle=dlopen(wiringPi_path, RTLD_LAZY);
-	if (wiringPi_handle == nullptr){
-		exp=std::string("uart.cpp:dlopen failed:")+dlerror();
-		throw std::runtime_error(exp);
-		return;
-	}
-	dlerror();
-	serialOpen = (int(*)(char*,int))dlsym(wiringPi_handle, "serialOpen"); 
-	serialClose = (int(*)(int))dlsym(wiringPi_handle, "serialClose"); 
-	wiringPiSetup = (int(*)())dlsym(wiringPi_handle, "wiringPiSetup"); 
-	serialDataAvail = (int(*)(int))dlsym(wiringPi_handle, "serialDataAvail"); 
-	serialPrintf = (void(*)(int,char*,...))dlsym(wiringPi_handle, "serialPrintf"); 
-	char uartPort[]="/dev/ttyAMA0";
-	if((this -> port = serialOpen (uartPort, 115200)) < 0){
-		exp=std::string("uart.cpp:Unable to open serial device:")+strerror(errno);
-		dlclose(wiringPi_handle);
-		throw std::runtime_error(exp);
-		return;
-	}
-	if(wiringPiSetup () == -1){
-		exp=std::string("uart.cpp:Unable to start wiringPi:")+strerror(errno);
-		serialClose(this->port);
-		dlclose(wiringPi_handle);
-		throw std::runtime_error(exp);
-		return;
-	}
+	struct termios options;
+	cfmakeraw(&options); //row mode
+	cfsetispeed(&options, B1000000);
+	cfsetospeed(&options, B1000000);
+	options.c_cflag |=  (CLOCAL | CREAD);
+	options.c_cflag &= ~CSIZE;
+	options.c_cflag |= CS8;
+	options.c_iflag |= IGNPAR;
+	options.c_cflag &= ~CSTOPB; //one stop bit
+	options.c_oflag = 0;
+	options.c_lflag = 0;
+	tcflush(u, TCIFLUSH);
+	tcsetattr(u, TCSANOW, &options);
+	struct serial_struct ss;
+	ioctl(u, TIOCGSERIAL, &ss);
+	float BAUDRATE = 1000000;
+	ss.flags = (ss.flags & ~ASYNC_SPD_MASK) | ASYNC_SPD_CUST;
+	ss.custom_divisor = ss.baud_base / BAUDRATE;
+//	printf("ss.baud_base:%d\nss.custom_divisor:%d\n",ss.baud_base,ss.custom_divisor);
+	ioctl(u, TIOCSSERIAL, &ss);
+	return u;
 }
 Uart::~Uart()
 {
-	serialClose(this->port);
-	dlclose(wiringPi_handle);
-	delete wbuffer;
 }
 void Uart::do_uart_cycle()
 {
-	//TODO:just ignore servo reply
-	//if (io){//true for in, false for out
-	//in
-	//int ava = serialDataAvail(this->port);
-	//}
-	//else{
-	//out
-	int length=wbuffer->length();
-	if(length != 0){
-		char *tmp = new char[wbuffer->size() + 1];
-		std::copy(wbuffer->begin(),wbuffer->end(),tmp);
-		tmp[wbuffer->size()] = '\0';
-		serialPrintf(port,tmp);
-		delete[] tmp;
-		*wbuffer="";
+	for (std::vector<wbchars*>::iterator it=wbuffer.begin();it != wbuffer.end();){
+		wbchars* tmp = *it;
+		char todisplay[50];
+		char * p_display=todisplay;
+		memset(p_display,0,50*sizeof(char));
+		ByteToHexStr((const unsigned char*)tmp->buffer,p_display,tmp->length);
+		std::cout<<p_display<<std::endl;
+		for (int j=0; j < tmp->length; j++){
+			write(*fd,tmp->buffer+j,1);
+			tcflush(*fd,TCOFLUSH);
+		}
+		//clean buffer
+		delete tmp->buffer;
+		delete tmp;
+		it = wbuffer.erase(it);
 	}
-	//}
 }
-void Uart::change_mode()
+/*void Uart::change_mode()
 {
 	if(io == false)
 		io = true;
 	else
 		io = false;
-}
-int Uart::put_in(std::string *buffer,const char* content)
+}*/
+int Uart::put_in(char *content,int leng)
 {
-	if (buffer->length() != 0){
-		buffer -> append(content);
-		buffer -> append("\0");
-		return 0;
-	}
+	wbchars *tmp = new wbchars;
+	tmp->buffer = new char[leng];
+	memcpy(tmp->buffer,content,leng);
+	tmp -> length = leng;
+	wbuffer.push_back(tmp);
 	return 0;
 }
-char* Uart::read_from(std::string *buffer)
+/*char* Uart::read_from(std::string *buffer)
 {	
 	int length=buffer->length();
 	if(length != 0){
@@ -108,6 +113,7 @@ void Uart::clean_buffer(std::string *buffer)
 {
 	*buffer = "";
 }
+*/
 void Uart::ByteToHexStr(const unsigned char* source, char* dest, int sourceLen)  
 {
 	short i;

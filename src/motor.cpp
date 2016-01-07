@@ -15,7 +15,7 @@
 #include <stdexcept>
 #include <math.h>
 Motor::Motor() :
-Uart(conf->get_wiringPi_so()),
+Uart(),
 motors_config(conf->get_motors_conf()),
 MOTOR_HEAD(0xffff)
 {
@@ -43,7 +43,7 @@ int Motor::run(std::string id,int speed)
 	*(buf+6) = speed & 255;
 	*(buf+7) = (speed > 0) ? (1024 + (speed & 512)) >>9 : (abs(speed) & 512) >> 9;
 	finish_checksum(buf,9);
-	this->put_in(wbuffer,buf);
+	this->put_in(buf,10);
 	free(buf);
 	return 0;
 }
@@ -79,7 +79,7 @@ int Motor::stop(std::string id)
 	*(buf+6) = 0;
 	*(buf+7) = 0;
 	finish_checksum(buf,9);
-	this->put_in(wbuffer,buf);
+	this->put_in(buf,10);
 	free(buf);
 	return 0;
 }
@@ -113,7 +113,7 @@ void Motor::set_Motor_mode(std::string id)
 	*(buf+8) = 0x00;
 	*(buf+9) = 0x00;
 	finish_checksum(buf,11);
-	this->put_in(wbuffer,buf);
+	this->put_in(buf,12);
 	free(buf);
 }
 void Motor::finish_checksum(char *buffer,size_t buf_size)

@@ -56,8 +56,6 @@ int xml_helper::load_sys_config()
 		sensors_config->insert(std::pair<std::string*,SensorsDef*>(&def->id,def));
 		Tree=Tree->NextSiblingElement();
 	}
-	Tree = docHandle.FirstChild("wiringPi").ToElement();
-	this -> wiringPi_so = Tree -> Attribute("so");
 	Tree = docHandle.FirstChild("DataBase").ToElement();
 	this -> database_path = Tree -> Attribute("path");
 	return 0;
@@ -91,8 +89,4 @@ void xml_helper::test_print_MotorsMap(MotorsMap Map)
 const char *xml_helper::get_database_path()
 {
 	return this -> database_path;
-}
-const char *xml_helper::get_wiringPi_so()
-{
-	return this -> wiringPi_so;
 }

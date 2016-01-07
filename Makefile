@@ -80,7 +80,6 @@ ifeq ($(TARGETSYSTEM), LINUX)
 endif
 LDFLAGS += -lrt
 LDFLAGS += -ltinyxml
-LDFLAGS += -ldl
 LDFLAGS += -lSQLiteCpp
 LDFLAGS += -lsqlite3
 LDFLAGS += -lbcm2835
@@ -101,11 +100,7 @@ $(ODIR)/%.o: $(SRC_DIR)/%.cpp
 clean:
 	rm -rf $(TARGET)
 	rm -rf $(ODIR)
-	rm -f libwiringPi.so.1.0
 	rm -f libSQLiteCpp.a
 sqlitecpp:
 	cd SQLiteCpp;cmake -DSQLITECPP_BUILD_EXAMPLES=OFF -DSQLITECPP_BUILD_TESTS=OFF .;cmake --build .
 	cp SQLiteCpp/lib*.a .
-wiringPi:
-	cd src/wiringPi/wiringPi;make
-	cp src/wiringPi/wiringPi/libwiringPi.so.1.0 .
