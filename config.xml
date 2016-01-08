@@ -2,9 +2,10 @@
 <DataBase path="./items.db"/>
 <Motors>
 	<!--Define motors to gpio number.-->
-	<Motor name="main" protocol="raw" id="8"/>
-	<Motor name="left_dir" protocol="raw" id="3"/>
-	<Motor name="right_dir" protocol="raw" id="4"/>
+	<Motor name="1" protocol="raw" id="3"/>
+	<Motor name="2" protocol="raw" id="4"/>
+	<Motor name="3" protocol="raw" id="8"/>
+	<Motor name="4" protocol="raw" id="7"/>
 </Motors>
 <Sensors>
 	<!--Define sensors to gpio number.-->

@@ -80,10 +80,10 @@ void timer_helper::m_initTimer(timer_t *timerId, callback_func function)
 void timer_helper::m_setTimer(timer_t *timerId, int ExpireMSec)
 {
 	struct itimerspec its;
-//	its.it_value.tv_sec = ExpireMSec / 1000;
-	its.it_value.tv_sec = ExpireMSec;
-//	its.it_value.tv_nsec = (ExpireMSec % 1000) * 1000000;
-	its.it_value.tv_nsec = ExpireMSec * 1000000;
+	its.it_value.tv_sec = ExpireMSec / 1000;
+//	its.it_value.tv_sec = ExpireMSec;
+	its.it_value.tv_nsec = (ExpireMSec % 1000) * 1000000;
+//	its.it_value.tv_nsec = ExpireMSec * 1000000;
 	its.it_interval.tv_sec = 0;
 	its.it_interval.tv_nsec = 0;
 	if (timer_settime(*timerId, 0, &its, NULL) == -1){

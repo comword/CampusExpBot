@@ -7,6 +7,7 @@
  */
 #include "bot.h"
 #include "motor.h"
+
 bot *b;
 bot::bot()
 {
@@ -26,19 +27,21 @@ void bot::go()
 {
 	switch (b_s) {
 	case BOT_SELFCHECK:
-		m->run("main",1023);
-		m->run("right_dir",1023);
-		m->run("left_dir",1023);
-		return;
+		m->run("1",1023,1000);
+		m->run("2",1023,1000);
+		m->run("3",1023,1000);
+		m->run("4",1023,1000);
+		b_s = BOT_SYNC;
+		break;
 	case BOT_SYNC:
-		return;
+		break;
 	case BOT_ONROAD:
-		return;
+		break;
 	case BOT_DELIVER:
-		return;
+		break;
 	case BOT_BACK:
-		return;
+		break;
 	case BOT_ERROR:
- 		return;
+ 		break;
 	}; 
 }

@@ -80,6 +80,7 @@ void Uart::do_uart_cycle()
 		delete tmp->buffer;
 		delete tmp;
 		it = wbuffer.erase(it);
+		usleep(50);
 	}
 }
 /*void Uart::change_mode()

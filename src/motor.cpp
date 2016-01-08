@@ -31,19 +31,21 @@ int Motor::run(std::string id,int speed)
 	if (abs(speed) > 1023)
 		throw std::runtime_error(std::string("Motor::run speed value larger than 1023!\n"));
 	int rid = find_motor_byid(id)->id;
-	char *buf=(char *)malloc(10*sizeof(char));
-	buf=(char *)memset(buf,0,10*sizeof(char));
+	char *buf=(char *)malloc(12*sizeof(char));
+	buf=(char *)memset(buf,0,12*sizeof(char));
 	buf=(char *)memset(buf,MOTOR_HEAD,2*sizeof(char));
 	rid &= 0xff;
 	char *motorID = (char *)&rid;
 	*(buf+2) = *motorID;
-	*(buf+3) = 0x04;
+	*(buf+3) = 0x07;
 	*(buf+4) = 0x03;
-	*(buf+5) = 0x20;
-	*(buf+6) = speed & 255;
-	*(buf+7) = (speed > 0) ? (1024 + (speed & 512)) >>9 : (abs(speed) & 512) >> 9;
-	finish_checksum(buf,9);
-	this->put_in(buf,10);
+	*(buf+5) = 0x1E;
+	*(buf+6) = 0x00;
+	*(buf+7) = 0x00;
+	*(buf+8) = speed & 255;
+	*(buf+9) = (speed > 0) ? (1024 + (speed & 512)) >>9 : (abs(speed) & 512) >> 9;
+	finish_checksum(buf,11);
+	this->put_in(buf,11);
 	free(buf);
 	return 0;
 }
@@ -73,13 +75,13 @@ int Motor::stop(std::string id)
 	buf=(char *)memset(buf,0,10*sizeof(char));
 	buf=(char *)memset(buf,MOTOR_HEAD,2*sizeof(char));
 	*(buf+2) = *motorID;
-	*(buf+3) = 0x04;
+	*(buf+3) = 0x05;
 	*(buf+4) = 0x03;
 	*(buf+5) = 0x20;
 	*(buf+6) = 0;
 	*(buf+7) = 0;
 	finish_checksum(buf,9);
-	this->put_in(buf,10);
+	this->put_in(buf,9);
 	free(buf);
 	return 0;
 }
@@ -113,7 +115,7 @@ void Motor::set_Motor_mode(std::string id)
 	*(buf+8) = 0x00;
 	*(buf+9) = 0x00;
 	finish_checksum(buf,11);
-	this->put_in(buf,12);
+	this->put_in(buf,11);
 	free(buf);
 }
 void Motor::finish_checksum(char *buffer,size_t buf_size)
