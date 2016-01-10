@@ -84,7 +84,8 @@ LDFLAGS += -lSQLiteCpp
 LDFLAGS += -lsqlite3
 LDFLAGS += -lbcm2835
 LDFLAGS += -lpthread
-LDFLAGS += -L.
+LDFLAGS += -lpython2.7
+LDFLAGS += -L./lib
 all: $(TARGET) $(L10N)
 	@
 $(TARGET): $(ODIR) $(DDIR) $(OBJS)
@@ -100,7 +101,6 @@ $(ODIR)/%.o: $(SRC_DIR)/%.cpp
 clean:
 	rm -rf $(TARGET)
 	rm -rf $(ODIR)
-	rm -f libSQLiteCpp.a
 sqlitecpp:
 	cd SQLiteCpp;cmake -DSQLITECPP_BUILD_EXAMPLES=OFF -DSQLITECPP_BUILD_TESTS=OFF .;cmake --build .
-	cp SQLiteCpp/lib*.a .
+	cp SQLiteCpp/lib*.a ./lib

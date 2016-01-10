@@ -24,7 +24,7 @@ IDCard::~IDCard(){}
 
 void * IDCard::read_card_thread(void *ptr)
 {
-	Card_arg aCard;
+/*	Card_arg aCard;
 	IDCard *orgclass = (IDCard *) ptr;
 	while(1){
 		sleep(1);
@@ -34,7 +34,7 @@ void * IDCard::read_card_thread(void *ptr)
 					orgclass->card_succss_callback(aCard);
 			}
 		}
-	}
+	}*/
 }
 
 void IDCard::start_thread()
