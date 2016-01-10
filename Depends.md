@@ -1,6 +1,7 @@
 *Just run "apt-get install []"
 libtinyxml-dev
 libsqlite3-dev
+python-dev
 cmake
 *bcm2835
 Download the latest version of the library, say bcm2835-1.xx.tar.gz, then:
