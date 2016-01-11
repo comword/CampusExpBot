@@ -32,3 +32,6 @@
 
 #Database
 *.db
+
+#Python Cache
+*.pyc
