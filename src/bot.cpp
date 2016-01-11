@@ -7,10 +7,17 @@
  */
 #include "bot.h"
 #include "motor.h"
+#include "IDCard.h"
 
 bot *b;
 bot::bot()
 {
+		blue = (int*)malloc(5*sizeof(int));
+		blue[0]=162;
+		blue[1]=188;
+		blue[2]=136;
+		blue[3]=111;
+		blue[4]=249;
 }
 bot::~bot()
 {
@@ -31,6 +38,12 @@ void bot::go()
 		m->run("2",1023,1000);
 		m->run("3",1023,1000);
 		m->run("4",1023,1000);
+		ID->registry_card(blue,
+		[](int*) -> int {
+			m->run("1",1023,1000);
+			return 0;
+			}
+		);
 		b_s = BOT_SYNC;
 		break;
 	case BOT_SYNC:

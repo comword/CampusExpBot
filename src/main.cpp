@@ -113,9 +113,10 @@ int main(int argc, char *argv[])
 	conf->test_print_MotorsMap(Motors);
 	//Main Loop
 	do{
-		usleep(1000);
+		usleep(10000);
 		m->do_uart_cycle();
 		b->go();
+		ID->read_card_thread();
 	} while (!exit);
 	delete(m);
 	delete(conf);

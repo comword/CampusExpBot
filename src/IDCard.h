@@ -7,17 +7,23 @@
  */
 #include "RFID.h"
 
+#include <map>
+#include <functional>
+
+typedef std::function<int(int*)> card_callback;
+using CardsMap = std::map<int*,card_callback>;
 class IDCard : public RFID
 {
 public:
 	IDCard();
 	virtual ~IDCard();
-	static void *read_card_thread(void *ptr);
-	void start_thread();
-	struct Card_arg{
-		unsigned char card_type;
-		unsigned char id[6];
-	};
-	void card_succss_callback(Card_arg &aCard);
+	void read_card_thread();
+	void card_succss_callback(int* aCard);
+	void registry_card(int* aCard, card_callback func);
+	void unregistry_card(int* aCard);
+	void check_CM(int* aCard);
+protected:
+	CardsMap *CM;
+	int *last_card;
 };
 extern IDCard *ID;

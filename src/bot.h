@@ -19,5 +19,6 @@ public:
 	void setMode(bot_status status);
 	int self_check();
 	void go();
+	int *blue;
 private:
 };

@@ -12,43 +12,62 @@
 #include <string.h>
 #include <errno.h>
 #include <stdexcept>
-#include <pthread.h>
 #include <unistd.h>
 #include <iostream>
 
 IDCard::IDCard()
 {
-	this->start_thread();
+	CM = new CardsMap();
 }
-IDCard::~IDCard(){}
-
-void * IDCard::read_card_thread(void *ptr)
+IDCard::~IDCard()
 {
-/*	Card_arg aCard;
-	IDCard *orgclass = (IDCard *) ptr;
-	while(1){
-		sleep(1);
-		if (orgclass->findCard(0x52,&aCard.card_type)==MI_OK){
-			if (orgclass->anticoll(aCard.id)==MI_OK){
-					aCard.id[5]=0;
-					orgclass->card_succss_callback(aCard);
-			}
+	delete CM;
+}
+
+void IDCard::read_card_thread()
+{
+	int* Cardid;
+	Cardid = this->read_card();
+	if (Cardid != nullptr){
+		if (last_card == nullptr){
+			this->card_succss_callback(Cardid);
+			last_card = Cardid;
+			return;
 		}
-	}*/
+		if (*last_card != *Cardid && *(last_card+1) != *(Cardid+1) && *(last_card+2) != *(Cardid+2) && *(last_card+3) != *(Cardid+3) && *(last_card+4) != *(Cardid+4))
+			this->card_succss_callback(Cardid);
+		last_card = Cardid;
+	}
 }
 
-void IDCard::start_thread()
+void IDCard::card_succss_callback(int* aCard)
 {
-	pthread_attr_t attr;
-	pthread_t tid;
-	pthread_attr_init(&attr);
-	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
-	int res = pthread_create(&tid, NULL, IDCard::read_card_thread, this);
-	if (res)
-		throw std::runtime_error(std::string("IDCard::pthread_create()@start_thread() Failed!\n"));
-	//pthread_join(tid, NULL);
+	std::cout<<"CARD: ";
+	for (int i=0; i<5; i++){
+		std::cout<<*(aCard+i)<<" ";
+	}
+	std::cout<<std::endl;
+	check_CM(aCard);
+	free(aCard);
 }
-void IDCard::card_succss_callback(Card_arg &aCard)
+void IDCard::registry_card(int* aCard, card_callback func)
 {
-	std::cout<<"CARD: "+std::string((const char *)aCard.id)<<std::endl;
+	CM->insert(std::pair<int*,card_callback>(aCard,func));
+}
+void IDCard::unregistry_card(int* aCard)
+{
+	for (CardsMap::iterator i=CM->begin(); i!=CM->end();){
+		if (*i->first == *aCard && *(i->first+1) == *(aCard+1) && *(i->first+2) == *(aCard+2) && *(i->first+3) == *(aCard+3) && *(i->first+4) == *(aCard+4)){
+			delete i->first;
+			CM->erase(i++);
+		}
+	}
+}
+void IDCard::check_CM(int* aCard)
+{
+	for (CardsMap::iterator i=CM->begin(); i!=CM->end();i++){
+		if (*i->first == *aCard && *(i->first+1) == *(aCard+1) && *(i->first+2) == *(aCard+2) && *(i->first+3) == *(aCard+3) && *(i->first+4) == *(aCard+4)){
+			i->second(aCard);
+		}
+	}
 }
