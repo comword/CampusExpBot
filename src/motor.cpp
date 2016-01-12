@@ -40,13 +40,14 @@ int Motor::run(std::string id,int speed)
 	*(buf+3) = 0x07;
 	*(buf+4) = 0x03;
 	*(buf+5) = 0x1E;
-	*(buf+6) = 0x00;
-	*(buf+7) = 0x00;
+	*(buf+6) = 0xfe;
+	*(buf+7) = 0xf3;
 	*(buf+8) = speed & 255;
 	*(buf+9) = (speed > 0) ? (1024 + (speed & 512)) >>9 : (abs(speed) & 512) >> 9;
 	finish_checksum(buf,11);
 	this->put_in(buf,11);
 	free(buf);
+	find_motor_byid(id)->running = true;
 	return 0;
 }
 int Motor::run(std::string id,int speed,int delayms)
@@ -83,6 +84,7 @@ int Motor::stop(std::string id)
 	finish_checksum(buf,9);
 	this->put_in(buf,9);
 	free(buf);
+	find_motor_byid(id)->running = false;
 	return 0;
 }
 MotorsDef* Motor::find_motor_byid(std::string id)
@@ -127,4 +129,14 @@ void Motor::finish_checksum(char *buffer,size_t buf_size)
 	sum = ~sum;
 	char *p_sum = (char *)&sum;
 	*(buffer+buf_size-1) = *p_sum;//checksum
+}
+void Motor::IfNotRun_Run(std::string id)
+{
+	if (find_motor_byid(id)->running == false)
+		m->run(id,1023);
+}
+void Motor::IfRun_Stop(std::string id)
+{
+	if (find_motor_byid(id)->running == true)
+		m->stop(id);
 }

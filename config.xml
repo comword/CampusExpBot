@@ -4,6 +4,7 @@
 	<!--Define motors to gpio number.-->
 	<Motor name="1" protocol="raw" id="3"/>
 	<Motor name="2" protocol="raw" id="4"/>
+	<Motor name="lock" protocol="raw" id="5"/>
 	<Motor name="3" protocol="raw" id="8"/>
 	<Motor name="4" protocol="raw" id="7"/>
 </Motors>

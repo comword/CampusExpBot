@@ -21,6 +21,8 @@ public:
 	void do_uart_cycle();
 	void set_Motor_mode(std::string id);
 	void finish_checksum(char *buffer,size_t buf_size);
+	void IfNotRun_Run(std::string id);
+	void IfRun_Stop(std::string id);
 	~Motor();
 protected:
 	MotorsDef* find_motor_byid(std::string id);

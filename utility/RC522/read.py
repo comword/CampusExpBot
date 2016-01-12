@@ -20,6 +20,7 @@ if __name__ == '__main__':
     if status == MIFAREReader.MI_OK:
       print "Card read UID: "+str(backData[0])+","+str(backData[1])+","+str(backData[2])+","+str(backData[3])+","+str(backData[4])
 def read_once():
+  MIFAREReader.GPIO_CLEEN()
   (status,TagType) = MIFAREReader.MFRC522_Request(MIFAREReader.PICC_REQIDL)
   if status == MIFAREReader.MI_OK:
     (status,backData) = MIFAREReader.MFRC522_Anticoll()

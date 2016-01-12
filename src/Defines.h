@@ -19,6 +19,7 @@ struct MotorsDef{
 	std::string name;
 	std::string protocol;
 	int id;
+	bool running = 0;
 };
 struct SensorsDef{
 	std::string id;

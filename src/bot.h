@@ -6,6 +6,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 #include "Defines.h"
+#include "GPIO.h"
 
 class bot;
 //only one bot entity.
@@ -20,5 +21,6 @@ public:
 	int self_check();
 	void go();
 	int *blue;
+	GPIOClass *IRSensor;
 private:
 };

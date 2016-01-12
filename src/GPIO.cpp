@@ -74,7 +74,7 @@ int GPIOClass::setval_gpio(std::string val)
 	return 0;
 }
 
-int GPIOClass::getval_gpio(std::string& val)
+int GPIOClass::getval_gpio(int& val)
 {
 	using namespace std;
 	string getval_str = "/sys/class/gpio/gpio" + this->gpionum + "/value";
@@ -84,10 +84,6 @@ int GPIOClass::getval_gpio(std::string& val)
 		return -1;
 	}
 	getvalgpio >> val ;  //read gpio value
-	if(val != "0")
-		 val = "1";
-	else
-		val = "0";
 	getvalgpio.close(); //close the value file
 	return 0;
 }

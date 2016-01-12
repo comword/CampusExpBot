@@ -76,11 +76,16 @@ void Uart::do_uart_cycle()
 			write(*fd,tmp->buffer+j,1);
 			tcflush(*fd,TCOFLUSH);
 		}
+		usleep(1000);
+		for (int j=0; j < tmp->length; j++){
+			write(*fd,tmp->buffer+j,1);
+			tcflush(*fd,TCOFLUSH);
+		}
 		//clean buffer
 		delete tmp->buffer;
 		delete tmp;
 		it = wbuffer.erase(it);
-		usleep(50);
+		usleep(60000);
 	}
 }
 /*void Uart::change_mode()
